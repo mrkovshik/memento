@@ -5,15 +5,16 @@ import (
 	"database/sql"
 	"log"
 
+	_ "github.com/lib/pq"
 	"github.com/mrkovshik/memento/api"
 	grpcServer "github.com/mrkovshik/memento/api/grpc"
 	"github.com/mrkovshik/memento/internal/server"
-	"github.com/mrkovshik/memento/internal/storage"
+	"github.com/mrkovshik/memento/internal/server/storage"
 	"google.golang.org/grpc"
 )
 
 func main() {
-	db, err := sql.Open("postgres", "host=localhost port=5432 user=yandex password=yandex dbname=yandex sslmode=disable")
+	db, err := sql.Open("postgres", "host=localhost port=5432 user=yandex password=yandex dbname=final sslmode=disable")
 	if err != nil {
 		log.Fatal("sql.Open", err)
 	}
