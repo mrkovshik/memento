@@ -15,7 +15,7 @@ func NewGrpcClient(conn *grpc.ClientConn) *GrpcClient {
 	return &GrpcClient{proto.NewMementoClient(conn)}
 }
 
-func (c *GrpcClient) AddUser(ctx context.Context, name, password string) error {
+func (c *GrpcClient) Register(ctx context.Context, name, password string) error {
 	req := &proto.AddUserRequest{Name: name, Password: password}
 	_, err := c.MementoClient.AddUser(context.Background(), req)
 	return err
