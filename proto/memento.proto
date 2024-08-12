@@ -7,6 +7,8 @@ message AddUserRequest{
   string password = 2;
 }
 
+
+
 message AddUserResponse{
   string error = 1;
 }
