@@ -8,20 +8,34 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/mrkovshik/memento/api"
 	grpcServer "github.com/mrkovshik/memento/api/grpc"
-	"github.com/mrkovshik/memento/internal/server"
-	"github.com/mrkovshik/memento/internal/server/storage"
+	config "github.com/mrkovshik/memento/internal/config/server"
+	"github.com/mrkovshik/memento/internal/service/server"
+	"github.com/mrkovshik/memento/internal/storage/server/storage"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
 
 func main() {
-	db, err := sql.Open("postgres", "host=localhost port=5432 user=yandex password=yandex dbname=final sslmode=disable")
+	logger, errNewDevelopment := zap.NewDevelopment()
+	if errNewDevelopment != nil {
+		logger.Fatal("zap.NewDevelopment",
+			zap.Error(errNewDevelopment))
+	}
+	defer logger.Sync() //nolint:all
+	sugar := logger.Sugar()
+
+	cfg, errGetConfigs := config.GetConfigs()
+	if errGetConfigs != nil {
+		sugar.Fatal("config.GetConfigs", errGetConfigs)
+	}
+	db, err := sql.Open("postgres", cfg.DBAddress)
 	if err != nil {
 		log.Fatal("sql.Open", err)
 	}
-	projectStorage := storage.NewPostgresStorage(db)
-	mementoService := server.NewService(projectStorage)
+	postgresStorage := storage.NewPostgresStorage(db)
+	mementoService := server.NewBasicService(postgresStorage, &cfg, sugar)
 	grpcSrv := grpc.NewServer()
-	grpcAPIService := grpcServer.NewServer(mementoService, grpcSrv)
+	grpcAPIService := grpcServer.NewServer(mementoService, grpcSrv, &cfg, sugar)
 	run(context.Background(), grpcAPIService)
 }
 

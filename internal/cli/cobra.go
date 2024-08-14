@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
+	"time"
 
 	"github.com/mrkovshik/memento/internal/model"
 	"github.com/spf13/cobra"
@@ -14,11 +16,11 @@ import (
 
 type CLI struct {
 	*cobra.Command
-	srv *service.Service
+	srv *service.BasicService
 	log *zap.SugaredLogger
 }
 
-func NewCLI(srv *service.Service, logger *zap.SugaredLogger) *CLI {
+func NewCLI(srv *service.BasicService, logger *zap.SugaredLogger) *CLI {
 	return &CLI{
 		Command: &cobra.Command{
 			Use:   "mementoapp",
@@ -71,7 +73,38 @@ func (c *CLI) ConfigureCLI() {
 	addCredsCmd.Flags().StringVarP(&creds.Password, "password", "p", "AwesomePassword", "user password")
 	addCredsCmd.Flags().StringVarP(&creds.Meta, "meta", "m", "AwesomeMeta", "user meta data")
 
-	c.AddCommand(registerCmd, addCredsCmd)
+	var getCredsCmd = &cobra.Command{
+		Use:   "get-credentials",
+		Short: "Get all login-password pairs from storage",
+		Run: func(cmd *cobra.Command, args []string) {
+			resultGetCredentials, errGetCredentials := c.srv.GetCredentials(context.Background())
+			if errGetCredentials != nil {
+				log.Fatal(errGetCredentials)
+			}
+			if len(resultGetCredentials) == 0 {
+				fmt.Println("No login-password pairs found!")
+			} else {
+				// Print table header
+				fmt.Printf("%-40s %-20s %-20s %-20s %-20s %-20s\n", "UUID", "Login", "Password", "Meta", "Created At", "Updated At")
+				fmt.Println(strings.Repeat("-", 150))
+
+				// Print each credential in tabular format
+				for _, cred := range resultGetCredentials {
+					fmt.Printf(
+						"%-40s %-20s %-20s %-20s %-20s %-20s\n",
+						cred.UUID,
+						cred.Login,
+						cred.Password,
+						cred.Meta,
+						cred.CreatedAt.Format(time.DateTime),
+						cred.UpdatedAt.Format(time.DateTime),
+					)
+				}
+			}
+		},
+	}
+
+	c.AddCommand(registerCmd, addCredsCmd, getCredsCmd)
 	return
 }
 

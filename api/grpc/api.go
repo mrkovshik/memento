@@ -7,17 +7,19 @@ import (
 	"net/http"
 
 	"github.com/mrkovshik/memento/api"
+	config "github.com/mrkovshik/memento/internal/config/server"
 	pb "github.com/mrkovshik/memento/proto"
+	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 )
-
-const tcpPort = ":3200"
 
 // Server represents a gRPC server.
 type Server struct {
 	server  *grpc.Server
 	service api.Service
+	config  *config.ServerConfig
+	logger  *zap.SugaredLogger
 	pb.UnimplementedMementoServer
 }
 
@@ -31,11 +33,12 @@ type Server struct {
 //
 // Returns:
 //   - *Server: A new Server instance.
-func NewServer(service api.Service, server *grpc.Server) *Server {
+func NewServer(service api.Service, server *grpc.Server, config *config.ServerConfig, logger *zap.SugaredLogger) *Server {
 	return &Server{
-		server:  server,
-		service: service,
-
+		server:                     server,
+		service:                    service,
+		config:                     config,
+		logger:                     logger,
 		UnimplementedMementoServer: pb.UnimplementedMementoServer{},
 	}
 }
@@ -49,7 +52,7 @@ func NewServer(service api.Service, server *grpc.Server) *Server {
 //   - error: An error if the server fails to start or stop gracefully.
 func (s *Server) RunServer(ctx context.Context) error {
 	// Listen on TCP port 3200
-	listen, err := net.Listen("tcp", tcpPort)
+	listen, err := net.Listen("tcp", s.config.Address)
 	if err != nil {
 		return err
 	}

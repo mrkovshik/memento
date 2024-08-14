@@ -20,6 +20,267 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type Credential struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Uuid      string `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
+	Login     string `protobuf:"bytes,2,opt,name=login,proto3" json:"login,omitempty"`
+	Password  string `protobuf:"bytes,3,opt,name=password,proto3" json:"password,omitempty"`
+	Meta      string `protobuf:"bytes,4,opt,name=meta,proto3" json:"meta,omitempty"`
+	CreatedAt string `protobuf:"bytes,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt string `protobuf:"bytes,6,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+}
+
+func (x *Credential) Reset() {
+	*x = Credential{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_memento_proto_msgTypes[0]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Credential) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Credential) ProtoMessage() {}
+
+func (x *Credential) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_memento_proto_msgTypes[0]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Credential.ProtoReflect.Descriptor instead.
+func (*Credential) Descriptor() ([]byte, []int) {
+	return file_proto_memento_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *Credential) GetUuid() string {
+	if x != nil {
+		return x.Uuid
+	}
+	return ""
+}
+
+func (x *Credential) GetLogin() string {
+	if x != nil {
+		return x.Login
+	}
+	return ""
+}
+
+func (x *Credential) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
+func (x *Credential) GetMeta() string {
+	if x != nil {
+		return x.Meta
+	}
+	return ""
+}
+
+func (x *Credential) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
+func (x *Credential) GetUpdatedAt() string {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return ""
+}
+
+type CardData struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Uuid      string `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
+	Login     string `protobuf:"bytes,2,opt,name=login,proto3" json:"login,omitempty"`
+	Password  string `protobuf:"bytes,3,opt,name=password,proto3" json:"password,omitempty"`
+	Meta      string `protobuf:"bytes,4,opt,name=meta,proto3" json:"meta,omitempty"`
+	CreatedAt string `protobuf:"bytes,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt string `protobuf:"bytes,6,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+}
+
+func (x *CardData) Reset() {
+	*x = CardData{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_memento_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CardData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CardData) ProtoMessage() {}
+
+func (x *CardData) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_memento_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CardData.ProtoReflect.Descriptor instead.
+func (*CardData) Descriptor() ([]byte, []int) {
+	return file_proto_memento_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *CardData) GetUuid() string {
+	if x != nil {
+		return x.Uuid
+	}
+	return ""
+}
+
+func (x *CardData) GetLogin() string {
+	if x != nil {
+		return x.Login
+	}
+	return ""
+}
+
+func (x *CardData) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
+func (x *CardData) GetMeta() string {
+	if x != nil {
+		return x.Meta
+	}
+	return ""
+}
+
+func (x *CardData) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
+func (x *CardData) GetUpdatedAt() string {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return ""
+}
+
+type VariousData struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Uuid       string `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
+	BinaryData []byte `protobuf:"bytes,2,opt,name=binary_data,json=binaryData,proto3" json:"binary_data,omitempty"`
+	TextData   string `protobuf:"bytes,3,opt,name=text_data,json=textData,proto3" json:"text_data,omitempty"`
+	Meta       string `protobuf:"bytes,4,opt,name=meta,proto3" json:"meta,omitempty"`
+	CreatedAt  string `protobuf:"bytes,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt  string `protobuf:"bytes,6,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+}
+
+func (x *VariousData) Reset() {
+	*x = VariousData{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_memento_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *VariousData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*VariousData) ProtoMessage() {}
+
+func (x *VariousData) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_memento_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use VariousData.ProtoReflect.Descriptor instead.
+func (*VariousData) Descriptor() ([]byte, []int) {
+	return file_proto_memento_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *VariousData) GetUuid() string {
+	if x != nil {
+		return x.Uuid
+	}
+	return ""
+}
+
+func (x *VariousData) GetBinaryData() []byte {
+	if x != nil {
+		return x.BinaryData
+	}
+	return nil
+}
+
+func (x *VariousData) GetTextData() string {
+	if x != nil {
+		return x.TextData
+	}
+	return ""
+}
+
+func (x *VariousData) GetMeta() string {
+	if x != nil {
+		return x.Meta
+	}
+	return ""
+}
+
+func (x *VariousData) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
+func (x *VariousData) GetUpdatedAt() string {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return ""
+}
+
 type AddUserRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -32,7 +293,7 @@ type AddUserRequest struct {
 func (x *AddUserRequest) Reset() {
 	*x = AddUserRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_memento_proto_msgTypes[0]
+		mi := &file_proto_memento_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -45,7 +306,7 @@ func (x *AddUserRequest) String() string {
 func (*AddUserRequest) ProtoMessage() {}
 
 func (x *AddUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_memento_proto_msgTypes[0]
+	mi := &file_proto_memento_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -58,7 +319,7 @@ func (x *AddUserRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddUserRequest.ProtoReflect.Descriptor instead.
 func (*AddUserRequest) Descriptor() ([]byte, []int) {
-	return file_proto_memento_proto_rawDescGZIP(), []int{0}
+	return file_proto_memento_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *AddUserRequest) GetName() string {
@@ -86,7 +347,7 @@ type AddUserResponse struct {
 func (x *AddUserResponse) Reset() {
 	*x = AddUserResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_memento_proto_msgTypes[1]
+		mi := &file_proto_memento_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -99,7 +360,7 @@ func (x *AddUserResponse) String() string {
 func (*AddUserResponse) ProtoMessage() {}
 
 func (x *AddUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_memento_proto_msgTypes[1]
+	mi := &file_proto_memento_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -112,10 +373,478 @@ func (x *AddUserResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddUserResponse.ProtoReflect.Descriptor instead.
 func (*AddUserResponse) Descriptor() ([]byte, []int) {
-	return file_proto_memento_proto_rawDescGZIP(), []int{1}
+	return file_proto_memento_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *AddUserResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+type AddCredentialRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Credential *Credential `protobuf:"bytes,1,opt,name=credential,proto3" json:"credential,omitempty"`
+}
+
+func (x *AddCredentialRequest) Reset() {
+	*x = AddCredentialRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_memento_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AddCredentialRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddCredentialRequest) ProtoMessage() {}
+
+func (x *AddCredentialRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_memento_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddCredentialRequest.ProtoReflect.Descriptor instead.
+func (*AddCredentialRequest) Descriptor() ([]byte, []int) {
+	return file_proto_memento_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *AddCredentialRequest) GetCredential() *Credential {
+	if x != nil {
+		return x.Credential
+	}
+	return nil
+}
+
+type AddCredentialResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Error string `protobuf:"bytes,1,opt,name=error,proto3" json:"error,omitempty"`
+}
+
+func (x *AddCredentialResponse) Reset() {
+	*x = AddCredentialResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_memento_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AddCredentialResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddCredentialResponse) ProtoMessage() {}
+
+func (x *AddCredentialResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_memento_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddCredentialResponse.ProtoReflect.Descriptor instead.
+func (*AddCredentialResponse) Descriptor() ([]byte, []int) {
+	return file_proto_memento_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *AddCredentialResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+type GetCredentialsRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *GetCredentialsRequest) Reset() {
+	*x = GetCredentialsRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_memento_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetCredentialsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCredentialsRequest) ProtoMessage() {}
+
+func (x *GetCredentialsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_memento_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCredentialsRequest.ProtoReflect.Descriptor instead.
+func (*GetCredentialsRequest) Descriptor() ([]byte, []int) {
+	return file_proto_memento_proto_rawDescGZIP(), []int{7}
+}
+
+type GetCredentialsResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Credentials []*Credential `protobuf:"bytes,1,rep,name=credentials,proto3" json:"credentials,omitempty"`
+	Error       string        `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+}
+
+func (x *GetCredentialsResponse) Reset() {
+	*x = GetCredentialsResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_memento_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetCredentialsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCredentialsResponse) ProtoMessage() {}
+
+func (x *GetCredentialsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_memento_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCredentialsResponse.ProtoReflect.Descriptor instead.
+func (*GetCredentialsResponse) Descriptor() ([]byte, []int) {
+	return file_proto_memento_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *GetCredentialsResponse) GetCredentials() []*Credential {
+	if x != nil {
+		return x.Credentials
+	}
+	return nil
+}
+
+func (x *GetCredentialsResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+type AddCardDataRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	CardData *CardData `protobuf:"bytes,1,opt,name=cardData,proto3" json:"cardData,omitempty"`
+}
+
+func (x *AddCardDataRequest) Reset() {
+	*x = AddCardDataRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_memento_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AddCardDataRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddCardDataRequest) ProtoMessage() {}
+
+func (x *AddCardDataRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_memento_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddCardDataRequest.ProtoReflect.Descriptor instead.
+func (*AddCardDataRequest) Descriptor() ([]byte, []int) {
+	return file_proto_memento_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *AddCardDataRequest) GetCardData() *CardData {
+	if x != nil {
+		return x.CardData
+	}
+	return nil
+}
+
+type AddCardDataResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Error string `protobuf:"bytes,1,opt,name=error,proto3" json:"error,omitempty"`
+}
+
+func (x *AddCardDataResponse) Reset() {
+	*x = AddCardDataResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_memento_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AddCardDataResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddCardDataResponse) ProtoMessage() {}
+
+func (x *AddCardDataResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_memento_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddCardDataResponse.ProtoReflect.Descriptor instead.
+func (*AddCardDataResponse) Descriptor() ([]byte, []int) {
+	return file_proto_memento_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *AddCardDataResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+type GetCardsRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *GetCardsRequest) Reset() {
+	*x = GetCardsRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_memento_proto_msgTypes[11]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetCardsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCardsRequest) ProtoMessage() {}
+
+func (x *GetCardsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_memento_proto_msgTypes[11]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCardsRequest.ProtoReflect.Descriptor instead.
+func (*GetCardsRequest) Descriptor() ([]byte, []int) {
+	return file_proto_memento_proto_rawDescGZIP(), []int{11}
+}
+
+type GetCardsResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Cards []*CardData `protobuf:"bytes,1,rep,name=cards,proto3" json:"cards,omitempty"`
+	Error string      `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+}
+
+func (x *GetCardsResponse) Reset() {
+	*x = GetCardsResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_memento_proto_msgTypes[12]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetCardsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCardsResponse) ProtoMessage() {}
+
+func (x *GetCardsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_memento_proto_msgTypes[12]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCardsResponse.ProtoReflect.Descriptor instead.
+func (*GetCardsResponse) Descriptor() ([]byte, []int) {
+	return file_proto_memento_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *GetCardsResponse) GetCards() []*CardData {
+	if x != nil {
+		return x.Cards
+	}
+	return nil
+}
+
+func (x *GetCardsResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+type AddVariousDataRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Credential *Credential `protobuf:"bytes,1,opt,name=credential,proto3" json:"credential,omitempty"`
+}
+
+func (x *AddVariousDataRequest) Reset() {
+	*x = AddVariousDataRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_memento_proto_msgTypes[13]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AddVariousDataRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddVariousDataRequest) ProtoMessage() {}
+
+func (x *AddVariousDataRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_memento_proto_msgTypes[13]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddVariousDataRequest.ProtoReflect.Descriptor instead.
+func (*AddVariousDataRequest) Descriptor() ([]byte, []int) {
+	return file_proto_memento_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *AddVariousDataRequest) GetCredential() *Credential {
+	if x != nil {
+		return x.Credential
+	}
+	return nil
+}
+
+type AddVariousDataResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Error string `protobuf:"bytes,1,opt,name=error,proto3" json:"error,omitempty"`
+}
+
+func (x *AddVariousDataResponse) Reset() {
+	*x = AddVariousDataResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_memento_proto_msgTypes[14]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AddVariousDataResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddVariousDataResponse) ProtoMessage() {}
+
+func (x *AddVariousDataResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_memento_proto_msgTypes[14]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddVariousDataResponse.ProtoReflect.Descriptor instead.
+func (*AddVariousDataResponse) Descriptor() ([]byte, []int) {
+	return file_proto_memento_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *AddVariousDataResponse) GetError() string {
 	if x != nil {
 		return x.Error
 	}
@@ -127,19 +856,114 @@ var File_proto_memento_proto protoreflect.FileDescriptor
 var file_proto_memento_proto_rawDesc = []byte{
 	0x0a, 0x13, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x6d, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x6f, 0x2e,
 	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x08, 0x61, 0x70, 0x69, 0x2e, 0x67, 0x72, 0x70, 0x63, 0x22,
+	0xa4, 0x01, 0x0a, 0x0a, 0x43, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x12, 0x12,
+	0x0a, 0x04, 0x75, 0x75, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x75, 0x75,
+	0x69, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x6c, 0x6f, 0x67, 0x69, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x05, 0x6c, 0x6f, 0x67, 0x69, 0x6e, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x61, 0x73, 0x73,
+	0x77, 0x6f, 0x72, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x61, 0x73, 0x73,
+	0x77, 0x6f, 0x72, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x6d, 0x65, 0x74, 0x61, 0x18, 0x04, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x04, 0x6d, 0x65, 0x74, 0x61, 0x12, 0x1d, 0x0a, 0x0a, 0x63, 0x72, 0x65, 0x61,
+	0x74, 0x65, 0x64, 0x5f, 0x61, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x63, 0x72,
+	0x65, 0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x12, 0x1d, 0x0a, 0x0a, 0x75, 0x70, 0x64, 0x61, 0x74,
+	0x65, 0x64, 0x5f, 0x61, 0x74, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x75, 0x70, 0x64,
+	0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x22, 0xa2, 0x01, 0x0a, 0x08, 0x43, 0x61, 0x72, 0x64, 0x44,
+	0x61, 0x74, 0x61, 0x12, 0x12, 0x0a, 0x04, 0x75, 0x75, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x04, 0x75, 0x75, 0x69, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x6c, 0x6f, 0x67, 0x69, 0x6e,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6c, 0x6f, 0x67, 0x69, 0x6e, 0x12, 0x1a, 0x0a,
+	0x08, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x08, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x6d, 0x65, 0x74,
+	0x61, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6d, 0x65, 0x74, 0x61, 0x12, 0x1d, 0x0a,
+	0x0a, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x5f, 0x61, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x09, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x12, 0x1d, 0x0a, 0x0a,
+	0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x5f, 0x61, 0x74, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x09, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x22, 0xb1, 0x01, 0x0a, 0x0b,
+	0x56, 0x61, 0x72, 0x69, 0x6f, 0x75, 0x73, 0x44, 0x61, 0x74, 0x61, 0x12, 0x12, 0x0a, 0x04, 0x75,
+	0x75, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x75, 0x75, 0x69, 0x64, 0x12,
+	0x1f, 0x0a, 0x0b, 0x62, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x5f, 0x64, 0x61, 0x74, 0x61, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x0c, 0x52, 0x0a, 0x62, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x44, 0x61, 0x74, 0x61,
+	0x12, 0x1b, 0x0a, 0x09, 0x74, 0x65, 0x78, 0x74, 0x5f, 0x64, 0x61, 0x74, 0x61, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x08, 0x74, 0x65, 0x78, 0x74, 0x44, 0x61, 0x74, 0x61, 0x12, 0x12, 0x0a,
+	0x04, 0x6d, 0x65, 0x74, 0x61, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6d, 0x65, 0x74,
+	0x61, 0x12, 0x1d, 0x0a, 0x0a, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x5f, 0x61, 0x74, 0x18,
+	0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x41, 0x74,
+	0x12, 0x1d, 0x0a, 0x0a, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x5f, 0x61, 0x74, 0x18, 0x06,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x22,
 	0x40, 0x0a, 0x0e, 0x41, 0x64, 0x64, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
 	0x74, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
 	0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72,
 	0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72,
 	0x64, 0x22, 0x27, 0x0a, 0x0f, 0x41, 0x64, 0x64, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70,
 	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x32, 0x49, 0x0a, 0x07, 0x4d, 0x65,
-	0x6d, 0x65, 0x6e, 0x74, 0x6f, 0x12, 0x3e, 0x0a, 0x07, 0x41, 0x64, 0x64, 0x55, 0x73, 0x65, 0x72,
-	0x12, 0x18, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x41, 0x64, 0x64, 0x55,
-	0x73, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x19, 0x2e, 0x61, 0x70, 0x69,
-	0x2e, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x41, 0x64, 0x64, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x0f, 0x5a, 0x0d, 0x6d, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x6f,
-	0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x01, 0x28, 0x09, 0x52, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x22, 0x4c, 0x0a, 0x14, 0x41, 0x64,
+	0x64, 0x43, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x12, 0x34, 0x0a, 0x0a, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x67, 0x72, 0x70,
+	0x63, 0x2e, 0x43, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x52, 0x0a, 0x63, 0x72,
+	0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x22, 0x2d, 0x0a, 0x15, 0x41, 0x64, 0x64, 0x43,
+	0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x14, 0x0a, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x22, 0x17, 0x0a, 0x15, 0x47, 0x65, 0x74, 0x43, 0x72,
+	0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x22, 0x66, 0x0a, 0x16, 0x47, 0x65, 0x74, 0x43, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61,
+	0x6c, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x36, 0x0a, 0x0b, 0x63, 0x72,
+	0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32,
+	0x14, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x43, 0x72, 0x65, 0x64, 0x65,
+	0x6e, 0x74, 0x69, 0x61, 0x6c, 0x52, 0x0b, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61,
+	0x6c, 0x73, 0x12, 0x14, 0x0a, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x22, 0x44, 0x0a, 0x12, 0x41, 0x64, 0x64, 0x43,
+	0x61, 0x72, 0x64, 0x44, 0x61, 0x74, 0x61, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x2e,
+	0x0a, 0x08, 0x63, 0x61, 0x72, 0x64, 0x44, 0x61, 0x74, 0x61, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x12, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x43, 0x61, 0x72, 0x64,
+	0x44, 0x61, 0x74, 0x61, 0x52, 0x08, 0x63, 0x61, 0x72, 0x64, 0x44, 0x61, 0x74, 0x61, 0x22, 0x2b,
+	0x0a, 0x13, 0x41, 0x64, 0x64, 0x43, 0x61, 0x72, 0x64, 0x44, 0x61, 0x74, 0x61, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x22, 0x11, 0x0a, 0x0f, 0x47,
+	0x65, 0x74, 0x43, 0x61, 0x72, 0x64, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x52,
+	0x0a, 0x10, 0x47, 0x65, 0x74, 0x43, 0x61, 0x72, 0x64, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x28, 0x0a, 0x05, 0x63, 0x61, 0x72, 0x64, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28,
+	0x0b, 0x32, 0x12, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x43, 0x61, 0x72,
+	0x64, 0x44, 0x61, 0x74, 0x61, 0x52, 0x05, 0x63, 0x61, 0x72, 0x64, 0x73, 0x12, 0x14, 0x0a, 0x05,
+	0x65, 0x72, 0x72, 0x6f, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x65, 0x72, 0x72,
+	0x6f, 0x72, 0x22, 0x4d, 0x0a, 0x15, 0x41, 0x64, 0x64, 0x56, 0x61, 0x72, 0x69, 0x6f, 0x75, 0x73,
+	0x44, 0x61, 0x74, 0x61, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x34, 0x0a, 0x0a, 0x63,
+	0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x14, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x43, 0x72, 0x65, 0x64, 0x65,
+	0x6e, 0x74, 0x69, 0x61, 0x6c, 0x52, 0x0a, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61,
+	0x6c, 0x22, 0x2e, 0x0a, 0x16, 0x41, 0x64, 0x64, 0x56, 0x61, 0x72, 0x69, 0x6f, 0x75, 0x73, 0x44,
+	0x61, 0x74, 0x61, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x65,
+	0x72, 0x72, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x65, 0x72, 0x72, 0x6f,
+	0x72, 0x32, 0xd4, 0x03, 0x0a, 0x07, 0x4d, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x6f, 0x12, 0x3e, 0x0a,
+	0x07, 0x41, 0x64, 0x64, 0x55, 0x73, 0x65, 0x72, 0x12, 0x18, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x67,
+	0x72, 0x70, 0x63, 0x2e, 0x41, 0x64, 0x64, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x19, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x41, 0x64,
+	0x64, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x50, 0x0a,
+	0x0d, 0x41, 0x64, 0x64, 0x43, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x12, 0x1e,
+	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x41, 0x64, 0x64, 0x43, 0x72, 0x65,
+	0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1f,
+	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x41, 0x64, 0x64, 0x43, 0x72, 0x65,
+	0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x53, 0x0a, 0x0e, 0x47, 0x65, 0x74, 0x43, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c,
+	0x73, 0x12, 0x1f, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x47, 0x65, 0x74,
+	0x43, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x20, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x47, 0x65,
+	0x74, 0x43, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x73, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4a, 0x0a, 0x0b, 0x41, 0x64, 0x64, 0x43, 0x61, 0x72, 0x64, 0x44,
+	0x61, 0x74, 0x61, 0x12, 0x1c, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x41,
+	0x64, 0x64, 0x43, 0x61, 0x72, 0x64, 0x44, 0x61, 0x74, 0x61, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x1a, 0x1d, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x41, 0x64, 0x64,
+	0x43, 0x61, 0x72, 0x64, 0x44, 0x61, 0x74, 0x61, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x41, 0x0a, 0x08, 0x47, 0x65, 0x74, 0x43, 0x61, 0x72, 0x64, 0x73, 0x12, 0x19, 0x2e, 0x61,
+	0x70, 0x69, 0x2e, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x47, 0x65, 0x74, 0x43, 0x61, 0x72, 0x64, 0x73,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1a, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x67, 0x72,
+	0x70, 0x63, 0x2e, 0x47, 0x65, 0x74, 0x43, 0x61, 0x72, 0x64, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x53, 0x0a, 0x0e, 0x41, 0x64, 0x64, 0x56, 0x61, 0x72, 0x69, 0x6f, 0x75,
+	0x73, 0x44, 0x61, 0x74, 0x61, 0x12, 0x1f, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x67, 0x72, 0x70, 0x63,
+	0x2e, 0x41, 0x64, 0x64, 0x56, 0x61, 0x72, 0x69, 0x6f, 0x75, 0x73, 0x44, 0x61, 0x74, 0x61, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x67, 0x72, 0x70,
+	0x63, 0x2e, 0x41, 0x64, 0x64, 0x56, 0x61, 0x72, 0x69, 0x6f, 0x75, 0x73, 0x44, 0x61, 0x74, 0x61,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x0f, 0x5a, 0x0d, 0x6d, 0x65, 0x6d, 0x65,
+	0x6e, 0x74, 0x6f, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (
@@ -154,19 +978,47 @@ func file_proto_memento_proto_rawDescGZIP() []byte {
 	return file_proto_memento_proto_rawDescData
 }
 
-var file_proto_memento_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_proto_memento_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_proto_memento_proto_goTypes = []any{
-	(*AddUserRequest)(nil),  // 0: api.grpc.AddUserRequest
-	(*AddUserResponse)(nil), // 1: api.grpc.AddUserResponse
+	(*Credential)(nil),             // 0: api.grpc.Credential
+	(*CardData)(nil),               // 1: api.grpc.CardData
+	(*VariousData)(nil),            // 2: api.grpc.VariousData
+	(*AddUserRequest)(nil),         // 3: api.grpc.AddUserRequest
+	(*AddUserResponse)(nil),        // 4: api.grpc.AddUserResponse
+	(*AddCredentialRequest)(nil),   // 5: api.grpc.AddCredentialRequest
+	(*AddCredentialResponse)(nil),  // 6: api.grpc.AddCredentialResponse
+	(*GetCredentialsRequest)(nil),  // 7: api.grpc.GetCredentialsRequest
+	(*GetCredentialsResponse)(nil), // 8: api.grpc.GetCredentialsResponse
+	(*AddCardDataRequest)(nil),     // 9: api.grpc.AddCardDataRequest
+	(*AddCardDataResponse)(nil),    // 10: api.grpc.AddCardDataResponse
+	(*GetCardsRequest)(nil),        // 11: api.grpc.GetCardsRequest
+	(*GetCardsResponse)(nil),       // 12: api.grpc.GetCardsResponse
+	(*AddVariousDataRequest)(nil),  // 13: api.grpc.AddVariousDataRequest
+	(*AddVariousDataResponse)(nil), // 14: api.grpc.AddVariousDataResponse
 }
 var file_proto_memento_proto_depIdxs = []int32{
-	0, // 0: api.grpc.Memento.AddUser:input_type -> api.grpc.AddUserRequest
-	1, // 1: api.grpc.Memento.AddUser:output_type -> api.grpc.AddUserResponse
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	0,  // 0: api.grpc.AddCredentialRequest.credential:type_name -> api.grpc.Credential
+	0,  // 1: api.grpc.GetCredentialsResponse.credentials:type_name -> api.grpc.Credential
+	1,  // 2: api.grpc.AddCardDataRequest.cardData:type_name -> api.grpc.CardData
+	1,  // 3: api.grpc.GetCardsResponse.cards:type_name -> api.grpc.CardData
+	0,  // 4: api.grpc.AddVariousDataRequest.credential:type_name -> api.grpc.Credential
+	3,  // 5: api.grpc.Memento.AddUser:input_type -> api.grpc.AddUserRequest
+	5,  // 6: api.grpc.Memento.AddCredential:input_type -> api.grpc.AddCredentialRequest
+	7,  // 7: api.grpc.Memento.GetCredentials:input_type -> api.grpc.GetCredentialsRequest
+	9,  // 8: api.grpc.Memento.AddCardData:input_type -> api.grpc.AddCardDataRequest
+	11, // 9: api.grpc.Memento.GetCards:input_type -> api.grpc.GetCardsRequest
+	13, // 10: api.grpc.Memento.AddVariousData:input_type -> api.grpc.AddVariousDataRequest
+	4,  // 11: api.grpc.Memento.AddUser:output_type -> api.grpc.AddUserResponse
+	6,  // 12: api.grpc.Memento.AddCredential:output_type -> api.grpc.AddCredentialResponse
+	8,  // 13: api.grpc.Memento.GetCredentials:output_type -> api.grpc.GetCredentialsResponse
+	10, // 14: api.grpc.Memento.AddCardData:output_type -> api.grpc.AddCardDataResponse
+	12, // 15: api.grpc.Memento.GetCards:output_type -> api.grpc.GetCardsResponse
+	14, // 16: api.grpc.Memento.AddVariousData:output_type -> api.grpc.AddVariousDataResponse
+	11, // [11:17] is the sub-list for method output_type
+	5,  // [5:11] is the sub-list for method input_type
+	5,  // [5:5] is the sub-list for extension type_name
+	5,  // [5:5] is the sub-list for extension extendee
+	0,  // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_proto_memento_proto_init() }
@@ -176,7 +1028,7 @@ func file_proto_memento_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_proto_memento_proto_msgTypes[0].Exporter = func(v any, i int) any {
-			switch v := v.(*AddUserRequest); i {
+			switch v := v.(*Credential); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -188,7 +1040,163 @@ func file_proto_memento_proto_init() {
 			}
 		}
 		file_proto_memento_proto_msgTypes[1].Exporter = func(v any, i int) any {
+			switch v := v.(*CardData); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_memento_proto_msgTypes[2].Exporter = func(v any, i int) any {
+			switch v := v.(*VariousData); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_memento_proto_msgTypes[3].Exporter = func(v any, i int) any {
+			switch v := v.(*AddUserRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_memento_proto_msgTypes[4].Exporter = func(v any, i int) any {
 			switch v := v.(*AddUserResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_memento_proto_msgTypes[5].Exporter = func(v any, i int) any {
+			switch v := v.(*AddCredentialRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_memento_proto_msgTypes[6].Exporter = func(v any, i int) any {
+			switch v := v.(*AddCredentialResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_memento_proto_msgTypes[7].Exporter = func(v any, i int) any {
+			switch v := v.(*GetCredentialsRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_memento_proto_msgTypes[8].Exporter = func(v any, i int) any {
+			switch v := v.(*GetCredentialsResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_memento_proto_msgTypes[9].Exporter = func(v any, i int) any {
+			switch v := v.(*AddCardDataRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_memento_proto_msgTypes[10].Exporter = func(v any, i int) any {
+			switch v := v.(*AddCardDataResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_memento_proto_msgTypes[11].Exporter = func(v any, i int) any {
+			switch v := v.(*GetCardsRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_memento_proto_msgTypes[12].Exporter = func(v any, i int) any {
+			switch v := v.(*GetCardsResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_memento_proto_msgTypes[13].Exporter = func(v any, i int) any {
+			switch v := v.(*AddVariousDataRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_memento_proto_msgTypes[14].Exporter = func(v any, i int) any {
+			switch v := v.(*AddVariousDataResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -206,7 +1214,7 @@ func file_proto_memento_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_proto_memento_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

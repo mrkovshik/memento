@@ -2,17 +2,88 @@ syntax = "proto3";
 package api.grpc;
 option go_package = "memento/proto";
 
-message AddUserRequest{
- string name = 1;
-  string password = 2;
+
+
+message Credential {
+string uuid = 1;
+  string login = 2;
+  string password = 3;
+  string meta = 4;
+  string created_at = 5;
+  string updated_at = 6;
+
 }
 
+message CardData {
+  string uuid = 1;
+  string login = 2;
+  string password = 3;
+  string meta = 4;
+  string created_at = 5;
+  string updated_at = 6;
+}
 
+message VariousData {
+  string uuid = 1;
+  bytes binary_data = 2;
+  string text_data = 3;
+  string meta = 4;
+  string created_at = 5;
+  string updated_at = 6;
+}
+
+message AddUserRequest{
+  string name = 1;
+  string password = 2;
+}
 
 message AddUserResponse{
   string error = 1;
 }
 
+message AddCredentialRequest{
+  Credential credential = 1;
+}
+
+message AddCredentialResponse{
+  string error = 1;
+}
+
+message GetCredentialsRequest{}
+
+message GetCredentialsResponse{
+  repeated Credential credentials = 1;
+  string error = 2;
+}
+
+message AddCardDataRequest{
+  CardData cardData = 1;
+}
+
+message AddCardDataResponse{
+  string error = 1;
+}
+
+message GetCardsRequest{}
+
+message GetCardsResponse{
+  repeated CardData cards = 1;
+  string error = 2;
+}
+
+message AddVariousDataRequest{
+  Credential credential = 1;
+}
+
+message AddVariousDataResponse{
+  string error = 1;
+}
+
 service Memento {
   rpc AddUser(AddUserRequest) returns (AddUserResponse);
+  rpc AddCredential(AddCredentialRequest) returns (AddCredentialResponse);
+  rpc GetCredentials(GetCredentialsRequest) returns (GetCredentialsResponse);
+  rpc AddCardData(AddCardDataRequest) returns (AddCardDataResponse);
+  rpc GetCards(GetCardsRequest) returns (GetCardsResponse);
+  rpc AddVariousData(AddVariousDataRequest) returns (AddVariousDataResponse);
 }
