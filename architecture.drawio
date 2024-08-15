@@ -1,0 +1,40 @@
+<mxfile host="drawio-plugin" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" modified="2024-08-12T15:01:38.202Z" version="22.1.22" etag="CYbCOE2vB2AAUAERmgU_" type="embed">
+  <diagram name="Page-1" id="LgCjLO6H8Q8Gsc8tlIV6">
+    <mxGraphModel dx="1096" dy="760" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="AG8wNgMCOIXBPR1YlmiS-1" value="Server" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="580" y="100" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="AG8wNgMCOIXBPR1YlmiS-11" value="auth/profile/etc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="AG8wNgMCOIXBPR1YlmiS-2" target="AG8wNgMCOIXBPR1YlmiS-1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="AG8wNgMCOIXBPR1YlmiS-2" value="Client" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="140" y="100" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="AG8wNgMCOIXBPR1YlmiS-12" value="Postgres" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" parent="1" vertex="1">
+          <mxGeometry x="750" y="10" width="60" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="AG8wNgMCOIXBPR1YlmiS-14" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=1;entryDx=0;entryDy=-15;entryPerimeter=0;exitX=1;exitY=0;exitDx=0;exitDy=0;" parent="1" source="AG8wNgMCOIXBPR1YlmiS-1" target="AG8wNgMCOIXBPR1YlmiS-12" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="220" y="260" as="sourcePoint" />
+            <mxPoint x="270" y="210" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="AG8wNgMCOIXBPR1YlmiS-25" value="sync data" style="endArrow=classic;startArrow=classic;html=1;rounded=0;entryX=0;entryY=1;entryDx=0;entryDy=0;exitX=1;exitY=1;exitDx=0;exitDy=0;" parent="1" source="AG8wNgMCOIXBPR1YlmiS-2" target="AG8wNgMCOIXBPR1YlmiS-1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="300" y="330" as="sourcePoint" />
+            <mxPoint x="350" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="AG8wNgMCOIXBPR1YlmiS-26" value="Протокол взаимодействия - GRPC&lt;div&gt;Аутентификация - JWT&lt;/div&gt;&lt;div&gt;Безопасность соединения - TLS&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="330" y="190" width="220" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="AG8wNgMCOIXBPR1YlmiS-27" value="1. Как хранить данные на сервере?&amp;nbsp;&lt;div&gt;2. Если не надо хранить данные на клиенте, то что подразумевается под &quot;синхронизацией&quot;?&lt;/div&gt;&lt;div&gt;3. Как должно работать приложение - клиент? По команде из терминала запускаться, отрабатывать команду и завершаться, либо запускаться при входе в ОС и висеть в ожидании?&lt;/div&gt;&lt;div&gt;4. Хранение гигантских произвольных данных - можно хранить в базе? или хранить в файле, а в базе просто хранить ссылку на этот файл?&lt;/div&gt;&lt;div&gt;5. Пересылка данных по чанкам - стрим GRPC&lt;/div&gt;&lt;div&gt;6. Сервер распространять в виде докер-файла, а клиент в виде CLI - как это вообще работает?&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;div&gt;&amp;nbsp;&lt;/div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;align=left;" parent="1" vertex="1">
+          <mxGeometry x="550" y="470" width="280" height="280" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
