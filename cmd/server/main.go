@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"log"
 
+	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"github.com/mrkovshik/memento/api"
 	grpcServer "github.com/mrkovshik/memento/api/grpc"
@@ -28,7 +28,7 @@ func main() {
 	if errGetConfigs != nil {
 		sugar.Fatal("config.GetConfigs", errGetConfigs)
 	}
-	db, err := sql.Open("postgres", cfg.DBAddress)
+	db, err := sqlx.Connect("postgres", cfg.DBAddress)
 	if err != nil {
 		log.Fatal("sql.Open", err)
 	}

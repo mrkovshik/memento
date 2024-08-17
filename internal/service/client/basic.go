@@ -22,13 +22,13 @@ func NewBasicService(requester client, logger *zap.SugaredLogger) *BasicService 
 }
 
 type client interface {
-	Register(ctx context.Context, name, password string) error
+	Register(ctx context.Context, user model.User) error
 	AddCredentials(ctx context.Context, credential model.Credential) (err error)
 	GetCredentials(ctx context.Context) ([]model.Credential, error)
 }
 
-func (c *BasicService) AddUser(ctx context.Context, name, password string) error {
-	return c.client.Register(ctx, name, password)
+func (c *BasicService) AddUser(ctx context.Context, user model.User) error {
+	return c.client.Register(ctx, user)
 }
 
 func (c *BasicService) AddCredentials(ctx context.Context, credential model.Credential) (err error) {

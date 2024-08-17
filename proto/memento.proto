@@ -3,6 +3,14 @@ package api.grpc;
 option go_package = "memento/proto";
 
 
+message User {
+  string id = 1;
+  string name = 2;
+  string password = 3;
+  string email = 4;
+  string created_at = 5;
+  string updated_at = 6;
+}
 
 message Credential {
 string uuid = 1;
@@ -11,7 +19,6 @@ string uuid = 1;
   string meta = 4;
   string created_at = 5;
   string updated_at = 6;
-
 }
 
 message CardData {
@@ -33,12 +40,12 @@ message VariousData {
 }
 
 message AddUserRequest{
-  string name = 1;
-  string password = 2;
+ User user = 1;
 }
 
 message AddUserResponse{
-  string error = 1;
+  string token = 1;
+  string error = 2;
 }
 
 message AddCredentialRequest{

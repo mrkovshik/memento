@@ -18,8 +18,12 @@ func NewClient(conn *grpc.ClientConn) *Client {
 	return &Client{proto.NewMementoClient(conn)}
 }
 
-func (c *Client) Register(ctx context.Context, name, password string) error {
-	req := &proto.AddUserRequest{Name: name, Password: password}
+func (c *Client) Register(ctx context.Context, user model.User) error {
+	req := &proto.AddUserRequest{User: &proto.User{
+		Name:     user.Name,
+		Password: user.Password,
+		Email:    user.Email,
+	}}
 	_, err := c.MementoClient.AddUser(ctx, req)
 	return err
 }

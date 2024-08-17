@@ -3,13 +3,14 @@ package server
 import (
 	"context"
 
+	"github.com/mrkovshik/memento/internal/auth"
 	config "github.com/mrkovshik/memento/internal/config/server"
 	"github.com/mrkovshik/memento/internal/model"
 	"go.uber.org/zap"
 )
 
 type storage interface {
-	AddUser(ctx context.Context, username string, password string) error
+	AddUser(ctx context.Context, user model.User) (model.User, error)
 	AddCredential(ctx context.Context, credential model.Credential) error
 	GetCredentials(ctx context.Context) ([]model.Credential, error)
 }
@@ -28,11 +29,12 @@ func NewBasicService(storage storage, config *config.ServerConfig, logger *zap.S
 	}
 }
 
-func (s *BasicService) AddUser(ctx context.Context, username string, password string) error {
-	if err := s.storage.AddUser(ctx, username, password); err != nil {
-		return err
+func (s *BasicService) AddUser(ctx context.Context, user model.User) (string, error) {
+	newUser, err := s.storage.AddUser(ctx, user)
+	if err != nil {
+		return "", err
 	}
-	return nil
+	return auth.BuildJWTString(newUser.ID)
 }
 
 func (s *BasicService) AddCredential(ctx context.Context, credential model.Credential) error {

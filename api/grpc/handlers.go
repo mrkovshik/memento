@@ -9,10 +9,17 @@ import (
 )
 
 func (s *Server) AddUser(ctx context.Context, request *pb.AddUserRequest) (*pb.AddUserResponse, error) {
-	if err := s.service.AddUser(ctx, request.Name, request.Password); err != nil {
+	token, err := s.service.AddUser(ctx, model.User{
+		Name:     request.User.Name,
+		Email:    request.User.Email,
+		Password: request.User.Password,
+	})
+	if err != nil {
 		return &pb.AddUserResponse{Error: err.Error()}, err
 	}
-	return &pb.AddUserResponse{}, nil
+	return &pb.AddUserResponse{
+		Token: token,
+	}, nil
 }
 
 func (s *Server) AddCredential(ctx context.Context, request *pb.AddCredentialRequest) (*pb.AddCredentialResponse, error) {

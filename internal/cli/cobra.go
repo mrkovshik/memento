@@ -35,25 +35,25 @@ func NewCLI(srv *service.BasicService, logger *zap.SugaredLogger) *CLI {
 	}
 }
 
-func (c *CLI) ConfigureCLI() {
-	var name string
-	var password string
+func (c *CLI) ConfigureCLI() { //TODO: переделать с options
+	var user model.User
 
 	var registerCmd = &cobra.Command{
 		Use:   "register",
 		Short: "Register a new memento user",
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := c.srv.AddUser(context.Background(), name, password); nil != err {
+			if err := c.srv.AddUser(context.Background(), user); nil != err {
 				log.Fatal(err)
 			}
 			fmt.Println("Memento App registered successfully!")
 		},
 	}
 
-	registerCmd.Flags().StringVarP(&name, "name", "n", "AwesomeUser", "user name")
-	registerCmd.Flags().StringVarP(&password, "password", "p", "AwesomePassword", "user password")
+	registerCmd.Flags().StringVarP(&user.Name, "name", "n", "AwesomeUser", "user name")
+	registerCmd.Flags().StringVarP(&user.Password, "password", "p", "AwesomePassword", "user password")
+	registerCmd.Flags().StringVarP(&user.Email, "email", "e", "AwesomeEmail", "user email")
 
-	var creds = model.Credential{}
+	var creds model.Credential
 
 	var addCredsCmd = &cobra.Command{
 		Use:   "add-credentials",
