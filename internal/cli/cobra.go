@@ -2,14 +2,17 @@ package cli
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/mrkovshik/memento/internal/model"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
+	"google.golang.org/grpc/metadata"
 
 	service "github.com/mrkovshik/memento/internal/service/client"
 )
@@ -36,8 +39,8 @@ func NewCLI(srv *service.BasicService, logger *zap.SugaredLogger) *CLI {
 }
 
 func (c *CLI) ConfigureCLI() { //TODO: переделать с options
-	var user model.User
 
+	var user model.User
 	var registerCmd = &cobra.Command{
 		Use:   "register",
 		Short: "Register a new memento user",
@@ -59,7 +62,11 @@ func (c *CLI) ConfigureCLI() { //TODO: переделать с options
 		Use:   "add-credentials",
 		Short: "Add a new login-password pair to storage",
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := c.srv.AddCredentials(context.Background(), model.Credential{
+			ctxWithAuth, err := addTokenToCtx(context.Background())
+			if err != nil {
+				log.Fatal(err)
+			}
+			if err := c.srv.AddCredentials(ctxWithAuth, model.Credential{
 				Login:    creds.Login,
 				Password: creds.Password,
 				Meta:     creds.Meta,
@@ -77,7 +84,11 @@ func (c *CLI) ConfigureCLI() { //TODO: переделать с options
 		Use:   "get-credentials",
 		Short: "Get all login-password pairs from storage",
 		Run: func(cmd *cobra.Command, args []string) {
-			resultGetCredentials, errGetCredentials := c.srv.GetCredentials(context.Background())
+			ctxWithAuth, err := addTokenToCtx(context.Background())
+			if err != nil {
+				log.Fatal(err)
+			}
+			resultGetCredentials, errGetCredentials := c.srv.GetCredentials(ctxWithAuth)
 			if errGetCredentials != nil {
 				log.Fatal(errGetCredentials)
 			}
@@ -110,4 +121,17 @@ func (c *CLI) ConfigureCLI() { //TODO: переделать с options
 
 func (c *CLI) Run() error {
 	return c.Execute()
+}
+
+func addTokenToCtx(ctx context.Context) (context.Context, error) {
+	tokenBytes, err := os.ReadFile(".auth")
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			fmt.Println("No auth token found, please login or register")
+		}
+		return nil, err
+	}
+	md := metadata.New(map[string]string{"auth_token": string(tokenBytes)})
+	ctx = metadata.NewOutgoingContext(ctx, md)
+	return ctx, nil
 }

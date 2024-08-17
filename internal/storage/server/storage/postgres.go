@@ -22,8 +22,8 @@ func NewPostgresStorage(db *sqlx.DB) *PostgresStorage {
 }
 
 func (s *PostgresStorage) AddUser(ctx context.Context, user model.User) (model.User, error) {
-	query := `INSERT INTO users (name, email, password, created_at) VALUES ($1, $2, $3, $4)`
-	_, errExecContext := s.db.ExecContext(ctx, query, user.Name, user.Email, user.Password, user.CreatedAt)
+	query := `INSERT INTO users (name, email, password, created_at, updated_at) VALUES ($1, $2, $3, $4, $5)`
+	_, errExecContext := s.db.ExecContext(ctx, query, user.Name, user.Email, user.Password, time.Now(), time.Now())
 	if errExecContext != nil {
 		return model.User{}, errExecContext
 	}

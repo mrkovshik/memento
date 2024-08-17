@@ -2,17 +2,18 @@ package grpc
 
 import (
 	"context"
+	"time"
+
 	"github.com/mrkovshik/memento/internal/auth"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"time"
 )
 
-// UnaryInterceptor logs details of the gRPC unary calls.
-func UnaryInterceptor(logger *zap.SugaredLogger) grpc.UnaryServerInterceptor {
+// UnaryLoggingInterceptor logs details of the gRPC unary calls.
+func UnaryLoggingInterceptor(logger *zap.SugaredLogger) grpc.UnaryServerInterceptor {
 	return func(
 		ctx context.Context,
 		req interface{},
@@ -37,8 +38,8 @@ func UnaryInterceptor(logger *zap.SugaredLogger) grpc.UnaryServerInterceptor {
 	}
 }
 
-// StreamInterceptor logs details of the gRPC stream calls.
-func StreamInterceptor(logger *zap.SugaredLogger) grpc.StreamServerInterceptor {
+// StreamLoggingInterceptor logs details of the gRPC stream calls.
+func StreamLoggingInterceptor(logger *zap.SugaredLogger) grpc.StreamServerInterceptor {
 	return func(
 		srv interface{},
 		stream grpc.ServerStream,
@@ -63,9 +64,12 @@ func StreamInterceptor(logger *zap.SugaredLogger) grpc.StreamServerInterceptor {
 	}
 }
 
-// Authenticate returns a UnaryServerInterceptor that performs authentication and logs events.
+// Authenticate returns a UnaryServerInterceptor that performs authentication
 func Authenticate(logger *zap.SugaredLogger) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+		if info.FullMethod == "/api.grpc.Memento/AddUser" {
+			return handler(ctx, req)
+		}
 		// Log the incoming request information
 		logger.Infof("Processing request for method: %s", info.FullMethod)
 
@@ -76,8 +80,8 @@ func Authenticate(logger *zap.SugaredLogger) grpc.UnaryServerInterceptor {
 			return nil, status.Errorf(codes.Unauthenticated, "missing metadata")
 		}
 
-		// Extract and validate the Authorization header
-		values := md.Get("Authorization")
+		// Extract and validate the auth_token header
+		values := md.Get("auth_token")
 		if len(values) == 0 {
 			logger.Errorf("Missing bearer token in Authorization header")
 			return nil, status.Errorf(codes.Unauthenticated, "missing bearer token")

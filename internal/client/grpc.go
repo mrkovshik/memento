@@ -2,6 +2,8 @@ package client
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"time"
 
 	"github.com/google/uuid"
@@ -24,8 +26,23 @@ func (c *Client) Register(ctx context.Context, user model.User) error {
 		Password: user.Password,
 		Email:    user.Email,
 	}}
-	_, err := c.MementoClient.AddUser(ctx, req)
-	return err
+	resp, err := c.MementoClient.AddUser(ctx, req)
+	if err != nil {
+		return err
+	}
+	token := resp.GetToken()
+
+	// Write the token to a .env file
+	file, err := os.OpenFile(".auth", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	if _, err := fmt.Fprintf(file, token); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (c *Client) AddCredentials(ctx context.Context, credential model.Credential) error {
