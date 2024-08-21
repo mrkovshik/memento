@@ -16,6 +16,8 @@ type User struct {
 }
 
 type Credential struct {
+	ID        uint
+	UserID    uint `db:"user_id"`
 	UUID      uuid.UUID
 	Login     string
 	Password  string

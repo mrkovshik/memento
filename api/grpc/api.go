@@ -6,12 +6,13 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/mrkovshik/memento/api"
-	config "github.com/mrkovshik/memento/internal/config/server"
-	pb "github.com/mrkovshik/memento/proto"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
+
+	"github.com/mrkovshik/memento/api"
+	config "github.com/mrkovshik/memento/internal/config/server"
+	pb "github.com/mrkovshik/memento/proto"
 )
 
 // Server represents a gRPC server.

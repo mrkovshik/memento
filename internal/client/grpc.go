@@ -21,7 +21,7 @@ func NewClient(conn *grpc.ClientConn) *Client {
 }
 
 func (c *Client) Register(ctx context.Context, user model.User) error {
-	req := &proto.AddUserRequest{User: &proto.User{
+	req := &proto.AddUserRequest{User: &proto.User{ //TODO: hash pass
 		Name:     user.Name,
 		Password: user.Password,
 		Email:    user.Email,
@@ -33,7 +33,31 @@ func (c *Client) Register(ctx context.Context, user model.User) error {
 	token := resp.GetToken()
 
 	// Write the token to a .env file
-	file, err := os.OpenFile(".auth", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	file, err := os.OpenFile(".auth", os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	if _, err := fmt.Fprintf(file, token); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *Client) Login(ctx context.Context, user model.User) error {
+	req := &proto.GetTokenRequest{User: &proto.User{ //TODO: hash pass
+		Password: user.Password,
+		Email:    user.Email,
+	}}
+	resp, err := c.MementoClient.GetToken(ctx, req)
+	if err != nil {
+		return err
+	}
+	token := resp.GetToken()
+
+	// Write the token to a .env file
+	file, err := os.OpenFile(".auth", os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return err
 	}
@@ -47,7 +71,7 @@ func (c *Client) Register(ctx context.Context, user model.User) error {
 
 func (c *Client) AddCredentials(ctx context.Context, credential model.Credential) error {
 	req := &proto.AddCredentialRequest{
-		Credential: &proto.Credential{
+		Credential: &proto.Credential{ //TODO: encrypt data
 			Login:    credential.Login,
 			Password: credential.Password,
 			Meta:     credential.Meta,

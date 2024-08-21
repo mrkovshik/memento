@@ -2,9 +2,12 @@ package grpc
 
 import (
 	"context"
+	"errors"
 	"time"
 
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/mrkovshik/memento/internal/auth"
+	"github.com/mrkovshik/memento/internal/service/server"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -65,9 +68,9 @@ func StreamLoggingInterceptor(logger *zap.SugaredLogger) grpc.StreamServerInterc
 }
 
 // Authenticate returns a UnaryServerInterceptor that performs authentication
-func Authenticate(logger *zap.SugaredLogger) grpc.UnaryServerInterceptor {
+func Authenticate(svc *server.BasicService, logger *zap.SugaredLogger) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-		if info.FullMethod == "/api.grpc.Memento/AddUser" {
+		if info.FullMethod == "/api.grpc.Memento/AddUser" || info.FullMethod == "/api.grpc.Memento/GetToken" {
 			return handler(ctx, req)
 		}
 		// Log the incoming request information
@@ -89,10 +92,27 @@ func Authenticate(logger *zap.SugaredLogger) grpc.UnaryServerInterceptor {
 
 		token := values[0]
 		claims, err := auth.GetClaims(token)
-		if err != nil || claims == nil {
+		if err != nil {
+			if errors.Is(err, jwt.ErrTokenExpired) {
+				return nil, status.Errorf(codes.Unauthenticated, "Token expired")
+			}
+			logger.Errorf("Error validating token: %v", err)
+			return nil, status.Errorf(codes.Unauthenticated, "invalid token")
+		}
+
+		if claims == nil {
 			logger.Errorf("Invalid token: %v", err)
 			return nil, status.Errorf(codes.Unauthenticated, "invalid token")
 		}
+
+		_, err = svc.GetUserByID(ctx, claims.UserID)
+		if err != nil {
+			logger.Errorf("Invalid token: %v", err)
+			return nil, status.Errorf(codes.Unauthenticated, "invalid token")
+		}
+
+		// Add claims to the context
+		ctx = context.WithValue(ctx, auth.ClaimsKey, claims)
 
 		// Log successful authentication
 		logger.Infof("Successfully authenticated request for method: %s", info.FullMethod)

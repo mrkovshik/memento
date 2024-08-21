@@ -20,8 +20,9 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	Memento_AddUser_FullMethodName        = "/api.grpc.Memento/AddUser"
+	Memento_GetToken_FullMethodName       = "/api.grpc.Memento/GetToken"
 	Memento_AddCredential_FullMethodName  = "/api.grpc.Memento/AddCredential"
-	Memento_GetCredentials_FullMethodName = "/api.grpc.Memento/GetCredentials"
+	Memento_GetCredentials_FullMethodName = "/api.grpc.Memento/GetCredentialsByUserID"
 	Memento_AddCardData_FullMethodName    = "/api.grpc.Memento/AddCardData"
 	Memento_GetCards_FullMethodName       = "/api.grpc.Memento/GetCards"
 	Memento_AddVariousData_FullMethodName = "/api.grpc.Memento/AddVariousData"
@@ -32,6 +33,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MementoClient interface {
 	AddUser(ctx context.Context, in *AddUserRequest, opts ...grpc.CallOption) (*AddUserResponse, error)
+	GetToken(ctx context.Context, in *GetTokenRequest, opts ...grpc.CallOption) (*GetTokenResponse, error)
 	AddCredential(ctx context.Context, in *AddCredentialRequest, opts ...grpc.CallOption) (*AddCredentialResponse, error)
 	GetCredentials(ctx context.Context, in *GetCredentialsRequest, opts ...grpc.CallOption) (*GetCredentialsResponse, error)
 	AddCardData(ctx context.Context, in *AddCardDataRequest, opts ...grpc.CallOption) (*AddCardDataResponse, error)
@@ -51,6 +53,16 @@ func (c *mementoClient) AddUser(ctx context.Context, in *AddUserRequest, opts ..
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(AddUserResponse)
 	err := c.cc.Invoke(ctx, Memento_AddUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mementoClient) GetToken(ctx context.Context, in *GetTokenRequest, opts ...grpc.CallOption) (*GetTokenResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetTokenResponse)
+	err := c.cc.Invoke(ctx, Memento_GetToken_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -112,6 +124,7 @@ func (c *mementoClient) AddVariousData(ctx context.Context, in *AddVariousDataRe
 // for forward compatibility.
 type MementoServer interface {
 	AddUser(context.Context, *AddUserRequest) (*AddUserResponse, error)
+	GetToken(context.Context, *GetTokenRequest) (*GetTokenResponse, error)
 	AddCredential(context.Context, *AddCredentialRequest) (*AddCredentialResponse, error)
 	GetCredentials(context.Context, *GetCredentialsRequest) (*GetCredentialsResponse, error)
 	AddCardData(context.Context, *AddCardDataRequest) (*AddCardDataResponse, error)
@@ -130,11 +143,14 @@ type UnimplementedMementoServer struct{}
 func (UnimplementedMementoServer) AddUser(context.Context, *AddUserRequest) (*AddUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddUser not implemented")
 }
+func (UnimplementedMementoServer) GetToken(context.Context, *GetTokenRequest) (*GetTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetToken not implemented")
+}
 func (UnimplementedMementoServer) AddCredential(context.Context, *AddCredentialRequest) (*AddCredentialResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddCredential not implemented")
 }
 func (UnimplementedMementoServer) GetCredentials(context.Context, *GetCredentialsRequest) (*GetCredentialsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetCredentials not implemented")
+	return nil, status.Errorf(codes.Unimplemented, "method GetCredentialsByUserID not implemented")
 }
 func (UnimplementedMementoServer) AddCardData(context.Context, *AddCardDataRequest) (*AddCardDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddCardData not implemented")
@@ -180,6 +196,24 @@ func _Memento_AddUser_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MementoServer).AddUser(ctx, req.(*AddUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Memento_GetToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MementoServer).GetToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Memento_GetToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MementoServer).GetToken(ctx, req.(*GetTokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -286,11 +320,15 @@ var Memento_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Memento_AddUser_Handler,
 		},
 		{
+			MethodName: "GetToken",
+			Handler:    _Memento_GetToken_Handler,
+		},
+		{
 			MethodName: "AddCredential",
 			Handler:    _Memento_AddCredential_Handler,
 		},
 		{
-			MethodName: "GetCredentials",
+			MethodName: "GetCredentialsByUserID",
 			Handler:    _Memento_GetCredentials_Handler,
 		},
 		{

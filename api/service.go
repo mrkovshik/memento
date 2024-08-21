@@ -8,6 +8,7 @@ import (
 
 type Service interface {
 	AddUser(ctx context.Context, user model.User) (string, error)
+	GetToken(ctx context.Context, user model.User) (string, error)
 	AddCredential(ctx context.Context, credential model.Credential) error
 	GetCredentials(ctx context.Context) ([]model.Credential, error)
 }

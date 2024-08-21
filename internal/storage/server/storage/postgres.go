@@ -39,22 +39,30 @@ func (s *PostgresStorage) GetUserByEmail(ctx context.Context, email string) (mod
 	return user, nil
 }
 
+func (s *PostgresStorage) GetUserByID(ctx context.Context, id uint) (model.User, error) {
+	var user model.User
+	if err := s.db.GetContext(ctx, &user, "SELECT * FROM users WHERE id = $1", id); err != nil {
+		return model.User{}, err
+	}
+	return user, nil
+}
+
 func (s *PostgresStorage) AddCredential(ctx context.Context, credential model.Credential) error {
 	currentUUID, err := uuid.NewV6()
 	if err != nil {
 		return err
 	}
 	query := `INSERT INTO credentials_data (user_id, uuid, login, password, meta, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7)`
-	_, errExecContext := s.db.ExecContext(ctx, query, 123, currentUUID, credential.Login, credential.Password, credential.Meta, time.Now(), time.Now())
+	_, errExecContext := s.db.ExecContext(ctx, query, credential.UserID, currentUUID, credential.Login, credential.Password, credential.Meta, time.Now(), time.Now())
 	if errExecContext != nil {
 		return errExecContext
 	}
 	return nil
 }
 
-func (s *PostgresStorage) GetCredentials(ctx context.Context) ([]model.Credential, error) {
+func (s *PostgresStorage) GetCredentialsByUserID(ctx context.Context, userID uint) ([]model.Credential, error) {
 	var credentials []model.Credential
-	if err := s.db.GetContext(ctx, &credentials, "SELECT * FROM credentials_data"); err != nil {
+	if err := s.db.SelectContext(ctx, &credentials, "SELECT * FROM credentials_data WHERE user_id = $1", userID); err != nil {
 		return nil, err
 	}
 	return credentials, nil

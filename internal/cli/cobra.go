@@ -38,8 +38,13 @@ func NewCLI(srv *service.BasicService, logger *zap.SugaredLogger) *CLI {
 	}
 }
 
-func (c *CLI) ConfigureCLI() { //TODO: переделать с options
+func (c *CLI) Configure(opts ...func(c *CLI)) {
+	for _, opt := range opts {
+		opt(c)
+	}
+}
 
+func WithRegister(c *CLI) {
 	var user model.User
 	var registerCmd = &cobra.Command{
 		Use:   "register",
@@ -48,16 +53,36 @@ func (c *CLI) ConfigureCLI() { //TODO: переделать с options
 			if err := c.srv.AddUser(context.Background(), user); nil != err {
 				log.Fatal(err)
 			}
-			fmt.Println("Memento App registered successfully!")
+			log.Printf("Memento User %s registered successfully!", user.Name)
 		},
 	}
 
 	registerCmd.Flags().StringVarP(&user.Name, "name", "n", "AwesomeUser", "user name")
 	registerCmd.Flags().StringVarP(&user.Password, "password", "p", "AwesomePassword", "user password")
 	registerCmd.Flags().StringVarP(&user.Email, "email", "e", "AwesomeEmail", "user email")
+	c.AddCommand(registerCmd)
+}
 
+func WithLogin(c *CLI) {
+	var user model.User
+	var loginCmd = &cobra.Command{
+		Use:   "login",
+		Short: "Login an existing memento user",
+		Run: func(cmd *cobra.Command, args []string) {
+			if err := c.srv.Login(context.Background(), user); nil != err {
+				log.Fatal(err)
+			}
+			log.Printf("Memento User %s logged in successfully!", user.Name)
+		},
+	}
+
+	loginCmd.Flags().StringVarP(&user.Password, "password", "p", "AwesomePassword", "user password")
+	loginCmd.Flags().StringVarP(&user.Email, "email", "e", "AwesomeEmail", "user email")
+	c.AddCommand(loginCmd)
+}
+
+func WithAddCreds(c *CLI) {
 	var creds model.Credential
-
 	var addCredsCmd = &cobra.Command{
 		Use:   "add-credentials",
 		Short: "Add a new login-password pair to storage",
@@ -80,6 +105,10 @@ func (c *CLI) ConfigureCLI() { //TODO: переделать с options
 	addCredsCmd.Flags().StringVarP(&creds.Password, "password", "p", "AwesomePassword", "user password")
 	addCredsCmd.Flags().StringVarP(&creds.Meta, "meta", "m", "AwesomeMeta", "user meta data")
 
+	c.AddCommand(addCredsCmd)
+}
+
+func WithGetCreds(c *CLI) {
 	var getCredsCmd = &cobra.Command{
 		Use:   "get-credentials",
 		Short: "Get all login-password pairs from storage",
@@ -114,9 +143,7 @@ func (c *CLI) ConfigureCLI() { //TODO: переделать с options
 			}
 		},
 	}
-
-	c.AddCommand(registerCmd, addCredsCmd, getCredsCmd)
-	return
+	c.AddCommand(getCredsCmd)
 }
 
 func (c *CLI) Run() error {

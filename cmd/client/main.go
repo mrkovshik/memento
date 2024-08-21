@@ -32,7 +32,12 @@ func main() {
 	mementoClient := client.NewClient(conn)
 	srv := service.NewBasicService(mementoClient, sugar)
 	clInterface := cli.NewCLI(srv, sugar)
-	clInterface.ConfigureCLI()
+	clInterface.Configure(
+		cli.WithRegister,
+		cli.WithLogin,
+		cli.WithAddCreds,
+		cli.WithGetCreds,
+	)
 	if err := clInterface.Run(); err != nil {
 		sugar.Fatal(err)
 	}

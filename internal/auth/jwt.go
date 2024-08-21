@@ -13,7 +13,7 @@ type Claims struct {
 	UserID uint
 }
 
-const TOKEN_EXP = time.Hour * 24 * 30 //TODO: move to config
+const TOKEN_EXP = time.Hour * 1200 //TODO: move to config
 const SECRET_KEY = "supersecretkey"
 
 func BuildJWTString(userID uint) (string, error) {
@@ -41,6 +41,7 @@ func GetClaims(tokenString string) (*Claims, error) {
 			}
 			return []byte(SECRET_KEY), nil
 		})
+
 	if err != nil {
 		return &Claims{}, err
 	}
