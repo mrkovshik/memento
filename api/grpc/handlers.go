@@ -2,9 +2,11 @@ package grpc
 
 import (
 	"context"
+	"fmt"
+	"io"
+	"os"
 	"time"
 
-	"github.com/mrkovshik/memento/internal/auth"
 	"github.com/mrkovshik/memento/internal/model"
 	pb "github.com/mrkovshik/memento/proto"
 )
@@ -38,15 +40,10 @@ func (s *Server) GetToken(ctx context.Context, request *pb.GetTokenRequest) (*pb
 }
 
 func (s *Server) AddCredential(ctx context.Context, request *pb.AddCredentialRequest) (*pb.AddCredentialResponse, error) {
-	userID, err := auth.GetUserIDFromContext(ctx)
-	if err != nil {
-		return &pb.AddCredentialResponse{}, err
-	}
 	if err := s.service.AddCredential(ctx, model.Credential{
 		Login:    request.Credential.Login,
 		Password: request.Credential.Password,
 		Meta:     request.Credential.Meta,
-		UserID:   userID,
 	}); err != nil {
 		return &pb.AddCredentialResponse{Error: err.Error()}, err
 	}
@@ -71,4 +68,95 @@ func (s *Server) GetCredentials(ctx context.Context, request *pb.GetCredentialsR
 		}
 	}
 	return &pb.GetCredentialsResponse{Credentials: response}, nil
+}
+
+func (s *Server) AddVariousData(stream pb.Memento_AddVariousDataServer) error {
+	ctx := stream.Context()
+	req, err := stream.Recv()
+	if err != nil {
+		return stream.SendAndClose(&pb.AddVariousDataResponse{
+			UploadStatus: &pb.UploadStatus{
+				Success: false,
+				Message: "Failed to receive data",
+			},
+			Error: err.Error(),
+		})
+	}
+
+	variousData := req.GetVariousData()
+	if variousData == nil {
+		return stream.SendAndClose(&pb.AddVariousDataResponse{
+			UploadStatus: &pb.UploadStatus{
+				Success: false,
+				Message: "data model is required",
+			},
+			Error: "data model is empty",
+		})
+	}
+
+	// Inserting entry to DB
+	dataModel, err := s.service.AddVariousData(ctx, model.VariousData{
+		DataType: int(variousData.DataType),
+		Meta:     variousData.Meta,
+	})
+	if err != nil {
+		return stream.SendAndClose(&pb.AddVariousDataResponse{
+			UploadStatus: &pb.UploadStatus{
+				Success: false,
+				Message: "saving data failed",
+			},
+			Error: fmt.Sprintf("saving data failed: %s", err.Error()),
+		})
+	}
+
+	// Prepare to receive file chunks
+	fileName := fmt.Sprintf(".data-%s", dataModel.UUID)
+	dataFile, err := os.OpenFile(fileName, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return stream.SendAndClose(&pb.AddVariousDataResponse{
+			UploadStatus: &pb.UploadStatus{
+				Success: false,
+				Message: "failed to create or open file",
+			},
+			Error: err.Error(),
+		})
+	}
+	defer dataFile.Close()
+
+	// Receiving file by chunks
+	for {
+		req, err := stream.Recv()
+		if err == io.EOF {
+			// File transmission is complete
+			break
+		}
+		if err != nil {
+			return stream.SendAndClose(&pb.AddVariousDataResponse{
+				UploadStatus: &pb.UploadStatus{
+					Success: false,
+					Message: "upload file error",
+				},
+				Error: err.Error(),
+			})
+		}
+
+		if chunk := req.GetChunk(); chunk != nil {
+			if _, err := dataFile.Write(chunk.Content); err != nil {
+				return stream.SendAndClose(&pb.AddVariousDataResponse{
+					UploadStatus: &pb.UploadStatus{
+						Success: false,
+						Message: "failed to write chunk to file",
+					},
+					Error: err.Error(),
+				})
+			}
+		}
+	}
+
+	return stream.SendAndClose(&pb.AddVariousDataResponse{
+		UploadStatus: &pb.UploadStatus{
+			Success: true,
+			Message: "Data saved successfully!",
+		},
+	})
 }

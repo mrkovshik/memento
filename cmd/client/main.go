@@ -37,6 +37,7 @@ func main() {
 		cli.WithLogin,
 		cli.WithAddCreds,
 		cli.WithGetCreds,
+		cli.WithAddData,
 	)
 	if err := clInterface.Run(); err != nil {
 		sugar.Fatal(err)

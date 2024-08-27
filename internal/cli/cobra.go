@@ -91,11 +91,7 @@ func WithAddCreds(c *CLI) {
 			if err != nil {
 				log.Fatal(err)
 			}
-			if err := c.srv.AddCredentials(ctxWithAuth, model.Credential{
-				Login:    creds.Login,
-				Password: creds.Password,
-				Meta:     creds.Meta,
-			}); nil != err {
+			if err := c.srv.AddCredentials(ctxWithAuth, creds); nil != err {
 				log.Fatal(err)
 			}
 			fmt.Println("New credentials added successfully!")
@@ -144,6 +140,30 @@ func WithGetCreds(c *CLI) {
 		},
 	}
 	c.AddCommand(getCredsCmd)
+}
+
+func WithAddData(c *CLI) {
+	var (
+		data     model.VariousData
+		filePath string
+	)
+	var addDataCmd = &cobra.Command{
+		Use:   "add-data",
+		Short: "Add various data from file",
+		Run: func(cmd *cobra.Command, args []string) {
+			ctxWithAuth, err := addTokenToCtx(context.Background())
+			if err != nil {
+				log.Fatal(err)
+			}
+			errAddData := c.srv.AddVariousDataFromFile(ctxWithAuth, filePath, data)
+			if errAddData != nil {
+				log.Fatal(errAddData)
+			}
+		},
+	}
+	addDataCmd.Flags().StringVarP(&data.Meta, "meta", "m", "AwesomeMeta", "user meta data")
+	addDataCmd.Flags().StringVarP(&filePath, "path", "p", "", "path to the data file")
+	c.AddCommand(addDataCmd)
 }
 
 func (c *CLI) Run() error {

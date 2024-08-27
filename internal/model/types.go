@@ -27,6 +27,8 @@ type Credential struct {
 }
 
 type CardData struct {
+	ID        uint
+	UserID    uint `db:"user_id"`
 	UUID      uuid.UUID
 	Number    string
 	Expiry    string
@@ -36,13 +38,16 @@ type CardData struct {
 	CreatedAt time.Time `db:"created_at"`
 	UpdatedAt time.Time `db:"updated_at"`
 }
+type DataStatus string
 
 type VariousData struct {
-	UUID       uuid.UUID
-	DataType   int
-	BinaryData []byte
-	TextData   string
-	Meta       string
-	CreatedAt  time.Time `db:"created_at"`
-	UpdatedAt  time.Time `db:"updated_at"`
+	ID        uint
+	UserID    uint `db:"user_id"`
+	UUID      uuid.UUID
+	DataType  int    `db:"data_type"`
+	FilePath  string `db:"file_path"`
+	Status    DataStatus
+	Meta      string
+	CreatedAt time.Time `db:"created_at"`
+	UpdatedAt time.Time `db:"updated_at"`
 }

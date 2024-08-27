@@ -67,3 +67,33 @@ func (s *PostgresStorage) GetCredentialsByUserID(ctx context.Context, userID uin
 	}
 	return credentials, nil
 }
+
+func (s *PostgresStorage) AddVariousData(ctx context.Context, data model.VariousData) (model.VariousData, error) {
+	currentUUID, err := uuid.NewV6()
+	if err != nil {
+		return model.VariousData{}, err
+	}
+	query := `INSERT INTO various_data (user_id, uuid, data_type, file_path, meta, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7)`
+	_, errExecContext := s.db.ExecContext(ctx, query, data.UserID, currentUUID, data.DataType, data.FilePath, data.Meta, time.Now(), time.Now())
+	if errExecContext != nil {
+		return model.VariousData{}, errExecContext
+	}
+	return s.GetVariousDataByUUID(ctx, currentUUID)
+}
+
+func (s *PostgresStorage) GetVariousDataByUUID(ctx context.Context, uuid uuid.UUID) (model.VariousData, error) {
+	var result model.VariousData
+	if err := s.db.GetContext(ctx, &result, "SELECT * FROM various_data WHERE uuid = $1", uuid); err != nil {
+		return model.VariousData{}, err
+	}
+	return result, nil
+}
+
+func (s *PostgresStorage) UpdateVariousDataStatusByUUID(ctx context.Context, uuid uuid.UUID, status model.DataStatus) error {
+	query := `UPDATE various_data SET status = $1, updated_at = $2 WHERE uuid = $3`
+	_, errExecContext := s.db.ExecContext(ctx, query, status, time.Now(), uuid)
+	if errExecContext != nil {
+		return errExecContext
+	}
+	return nil
+}

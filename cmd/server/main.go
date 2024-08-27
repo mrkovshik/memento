@@ -34,7 +34,7 @@ func main() {
 	}
 	postgresStorage := storage.NewPostgresStorage(db)
 	mementoService := server.NewBasicService(postgresStorage, &cfg, sugar)
-	grpcSrv := grpc.NewServer(grpc.ChainUnaryInterceptor(grpcServer.UnaryLoggingInterceptor(sugar), grpcServer.Authenticate(mementoService, sugar)))
+	grpcSrv := grpc.NewServer(grpc.ChainUnaryInterceptor(grpcServer.UnaryLoggingInterceptor(sugar), grpcServer.Authenticate(mementoService, sugar)), grpc.ChainStreamInterceptor(grpcServer.AuthenticateStream(mementoService, sugar)))
 	grpcAPIService := grpcServer.NewServer(mementoService, grpcSrv, &cfg, sugar)
 	run(context.Background(), grpcAPIService)
 }

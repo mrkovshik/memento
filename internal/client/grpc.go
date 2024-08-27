@@ -112,3 +112,54 @@ func (c *Client) GetCredentials(ctx context.Context) ([]model.Credential, error)
 	}
 	return creds, nil
 }
+
+func (c *Client) AddVariousData(ctx context.Context, dataModel model.VariousData, data []byte) error {
+	stream, err := c.MementoClient.AddVariousData(ctx)
+	if err != nil {
+		return err
+	}
+	if err := stream.Send(&proto.AddVariousDataRequest{
+		Data: &proto.AddVariousDataRequest_VariousData{
+			VariousData: &proto.VariousData{
+				Meta:     dataModel.Meta,
+				DataType: int32(dataModel.DataType),
+			},
+		},
+	}); err != nil {
+		return fmt.Errorf("failed to send metadata: %w", err)
+	}
+
+	chunkSize := 1024 * 1024 // 1MB chunks TODO: move chunk size to config
+
+	for i := 0; i < len(data); i += chunkSize {
+		end := i + chunkSize
+		if end > len(data) {
+			end = len(data)
+		}
+
+		if err := stream.Send(&proto.AddVariousDataRequest{
+			Data: &proto.AddVariousDataRequest_Chunk{
+				Chunk: &proto.FileChunk{
+					Content: data[i:end],
+				},
+			},
+		}); err != nil {
+			return err
+		}
+	}
+
+	// Close the stream and get the response from the server
+	streamResp, err := stream.CloseAndRecv()
+	if err != nil {
+		return err
+	}
+	uploadErr := streamResp.GetError()
+	if uploadErr != "" {
+		return fmt.Errorf("upload data fail: %s", uploadErr)
+	}
+	uploadStatus := streamResp.GetUploadStatus()
+	if !uploadStatus.GetSuccess() {
+		return fmt.Errorf("upload data fail: %s", uploadStatus.GetMessage())
+	}
+	return nil
+}

@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"os"
 
 	config "github.com/mrkovshik/memento/internal/config/client"
 	"github.com/mrkovshik/memento/internal/model"
@@ -26,6 +27,7 @@ type client interface {
 	Login(ctx context.Context, user model.User) error
 	AddCredentials(ctx context.Context, credential model.Credential) (err error)
 	GetCredentials(ctx context.Context) ([]model.Credential, error)
+	AddVariousData(ctx context.Context, dataModel model.VariousData, data []byte) (err error)
 }
 
 func (c *BasicService) AddUser(ctx context.Context, user model.User) error {
@@ -42,4 +44,16 @@ func (c *BasicService) AddCredentials(ctx context.Context, credential model.Cred
 
 func (c *BasicService) GetCredentials(ctx context.Context) ([]model.Credential, error) {
 	return c.client.GetCredentials(ctx)
+}
+
+func (c *BasicService) AddVariousDataFromFile(ctx context.Context, filePath string, dataModel model.VariousData) error {
+
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		return err
+	}
+	if err := c.client.AddVariousData(ctx, dataModel, data); err != nil {
+		return err
+	}
+	return nil
 }
