@@ -28,9 +28,11 @@ type client interface {
 	Login(ctx context.Context, user model.User) error
 	AddCredentials(ctx context.Context, credential model.Credential) (err error)
 	ListCredentials(ctx context.Context) ([]model.Credential, error)
+	AddCard(ctx context.Context, card model.CardData) (err error)
+	ListCards(ctx context.Context) ([]model.CardData, error)
 	AddVariousData(ctx context.Context, dataModel model.VariousData, data []byte) (err error)
 	ListVariousData(ctx context.Context) (data []model.VariousData, err error)
-	DownloadVariousData(ctx context.Context, dataUUID uuid.UUID) error
+	DownloadVariousData(ctx context.Context, dataUUID uuid.UUID, path string) error
 }
 
 func (c *BasicService) AddUser(ctx context.Context, user model.User) error {
@@ -45,8 +47,16 @@ func (c *BasicService) AddCredentials(ctx context.Context, credential model.Cred
 	return c.client.AddCredentials(ctx, credential)
 }
 
-func (c *BasicService) GetCredentials(ctx context.Context) ([]model.Credential, error) {
+func (c *BasicService) ListCredentials(ctx context.Context) ([]model.Credential, error) {
 	return c.client.ListCredentials(ctx)
+}
+
+func (c *BasicService) AddCard(ctx context.Context, card model.CardData) (err error) {
+	return c.client.AddCard(ctx, card)
+}
+
+func (c *BasicService) ListCards(ctx context.Context) ([]model.CardData, error) {
+	return c.client.ListCards(ctx)
 }
 
 func (c *BasicService) AddVariousDataFromFile(ctx context.Context, filePath string, dataModel model.VariousData) error {
@@ -65,6 +75,6 @@ func (c *BasicService) ListVariousData(ctx context.Context) ([]model.VariousData
 	return c.client.ListVariousData(ctx)
 }
 
-func (c *BasicService) DownloadVariousData(ctx context.Context, dataUUID uuid.UUID) error {
-	return c.client.DownloadVariousData(ctx, dataUUID)
+func (c *BasicService) DownloadVariousData(ctx context.Context, dataUUID uuid.UUID, path string) error {
+	return c.client.DownloadVariousData(ctx, dataUUID, path)
 }

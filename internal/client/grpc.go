@@ -22,7 +22,7 @@ func NewClient(conn *grpc.ClientConn) *Client {
 }
 
 func (c *Client) Register(ctx context.Context, user model.User) error {
-	req := &proto.AddUserRequest{User: &proto.User{ //TODO: hash pass
+	req := &proto.AddUserRequest{User: &proto.User{
 		Name:     user.Name,
 		Password: user.Password,
 		Email:    user.Email,
@@ -84,7 +84,7 @@ func (c *Client) AddCredentials(ctx context.Context, credential model.Credential
 
 func (c *Client) ListCredentials(ctx context.Context) ([]model.Credential, error) {
 
-	res, err := c.MementoClient.GetCredentials(ctx, &proto.GetCredentialsRequest{})
+	res, err := c.MementoClient.ListCredentials(ctx, &proto.ListCredentialsRequest{})
 	if err != nil {
 		return nil, err
 	}
@@ -112,6 +112,54 @@ func (c *Client) ListCredentials(ctx context.Context) ([]model.Credential, error
 		creds[i].UpdatedAt = updatedAt
 	}
 	return creds, nil
+}
+
+func (c *Client) AddCard(ctx context.Context, card model.CardData) error {
+	req := &proto.AddCardsRequest{
+		CardData: &proto.CardData{ //TODO: encrypt data
+			Number: card.Number,
+			Name:   card.Name,
+			Cvv:    card.CVV,
+			Expiry: card.Expiry,
+			Meta:   card.Meta,
+		},
+	}
+	_, err := c.MementoClient.AddCards(ctx, req)
+	return err
+}
+
+func (c *Client) ListCards(ctx context.Context) ([]model.CardData, error) {
+
+	res, err := c.MementoClient.ListCards(ctx, &proto.ListCardsRequest{})
+	if err != nil {
+		return nil, err
+	}
+	cards := make([]model.CardData, len(res.Cards))
+	for i, card := range res.Cards {
+		cards[i] = model.CardData{
+			Number: card.Number,
+			Name:   card.Name,
+			CVV:    card.Cvv,
+			Meta:   card.Meta,
+			Expiry: card.Expiry,
+		}
+		currentUUID, err := uuid.Parse(card.Uuid)
+		if err != nil {
+			return nil, err
+		}
+		cards[i].UUID = currentUUID
+		createdAt, err := time.Parse(time.DateTime, card.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		cards[i].CreatedAt = createdAt
+		updatedAt, err := time.Parse(time.DateTime, card.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+		cards[i].UpdatedAt = updatedAt
+	}
+	return cards, nil
 }
 
 func (c *Client) AddVariousData(ctx context.Context, dataModel model.VariousData, data []byte) error {
@@ -194,7 +242,7 @@ func (c *Client) ListVariousData(ctx context.Context) ([]model.VariousData, erro
 	return data, nil
 }
 
-func (c *Client) DownloadVariousData(ctx context.Context, dataUUID uuid.UUID) error {
+func (c *Client) DownloadVariousData(ctx context.Context, dataUUID uuid.UUID, path string) error {
 	stream, err := c.MementoClient.DownloadVariousDataFile(ctx, &proto.DownloadVariousDataFileRequest{
 		DataUUID: dataUUID.String(),
 	})
@@ -202,7 +250,7 @@ func (c *Client) DownloadVariousData(ctx context.Context, dataUUID uuid.UUID) er
 		return err
 	}
 	// Open the output file
-	outFile, err := os.Create(dataUUID.String())
+	outFile, err := os.Create(path)
 	if err != nil {
 		return err
 	}

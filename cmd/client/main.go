@@ -37,6 +37,8 @@ func main() {
 		cli.WithLogin,
 		cli.WithAddCreds,
 		cli.WithGetCreds,
+		cli.WithAddCard,
+		cli.WithListCards,
 		cli.WithAddData,
 		cli.WithDownload,
 		cli.WithListData,

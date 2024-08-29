@@ -47,11 +47,11 @@ func (s *Server) AddCredential(ctx context.Context, request *pb.AddCredentialReq
 	return &pb.AddCredentialResponse{}, nil
 }
 
-func (s *Server) ListCredentials(ctx context.Context, _ *pb.GetCredentialsRequest) (*pb.GetCredentialsResponse, error) {
+func (s *Server) ListCredentials(ctx context.Context, _ *pb.ListCredentialsRequest) (*pb.ListCredentialsResponse, error) {
 
 	credentials, err := s.service.ListCredentials(ctx)
 	if err != nil {
-		return &pb.GetCredentialsResponse{Error: err.Error()}, err
+		return &pb.ListCredentialsResponse{Error: err.Error()}, err
 	}
 	response := make([]*pb.Credential, len(credentials))
 	for i, credential := range credentials {
@@ -64,7 +64,7 @@ func (s *Server) ListCredentials(ctx context.Context, _ *pb.GetCredentialsReques
 			UpdatedAt: credential.UpdatedAt.Format(time.DateTime),
 		}
 	}
-	return &pb.GetCredentialsResponse{Credentials: response}, nil
+	return &pb.ListCredentialsResponse{Credentials: response}, nil
 }
 
 func (s *Server) ListVariousData(ctx context.Context, _ *pb.ListVariousDataRequest) (*pb.ListVariousDataResponse, error) {

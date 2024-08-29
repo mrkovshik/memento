@@ -114,7 +114,7 @@ func WithGetCreds(c *CLI) {
 			if err != nil {
 				log.Fatal(err)
 			}
-			resultGetCredentials, errGetCredentials := c.srv.GetCredentials(ctxWithAuth)
+			resultGetCredentials, errGetCredentials := c.srv.ListCredentials(ctxWithAuth)
 			if errGetCredentials != nil {
 				log.Fatal(errGetCredentials)
 			}
@@ -143,6 +143,70 @@ func WithGetCreds(c *CLI) {
 	c.AddCommand(getCredsCmd)
 }
 
+func WithAddCard(c *CLI) {
+	var card model.CardData
+	var addCardCmd = &cobra.Command{
+		Use:   "add-card",
+		Short: "Add a new card to storage",
+		Run: func(cmd *cobra.Command, args []string) {
+			ctxWithAuth, err := addTokenToCtx(context.Background())
+			if err != nil {
+				log.Fatal(err)
+			}
+			if err := c.srv.AddCard(ctxWithAuth, card); nil != err {
+				log.Fatal(err)
+			}
+			fmt.Println("New card added successfully!")
+		},
+	}
+	addCardCmd.Flags().StringVarP(&card.Number, "number", "nm", "", "Card number")
+	addCardCmd.Flags().StringVarP(&card.Name, "name", "n", "", "Card holder's name")
+	addCardCmd.Flags().StringVarP(&card.CVV, "cvv", "c", "", "Card security code")
+	addCardCmd.Flags().StringVarP(&card.Meta, "meta", "m", "", "User meta data")
+	addCardCmd.Flags().StringVarP(&card.Expiry, "expiry", "e", "", "Card expiry date")
+
+	c.AddCommand(addCardCmd)
+}
+
+func WithListCards(c *CLI) {
+	var getCardsCmd = &cobra.Command{
+		Use:   "get-credentials",
+		Short: "Get all login-password pairs from storage",
+		Run: func(cmd *cobra.Command, args []string) {
+			ctxWithAuth, err := addTokenToCtx(context.Background())
+			if err != nil {
+				log.Fatal(err)
+			}
+			resultListCards, errListCards := c.srv.ListCards(ctxWithAuth)
+			if errListCards != nil {
+				log.Fatal(errListCards)
+			}
+			if len(resultListCards) == 0 {
+				fmt.Println("No cards found!")
+			} else {
+				// Print table header
+				fmt.Printf("%-40s %-20s %-20s %-5s %-20s %-20s %-20s %-20s\n", "UUID", "Card number", "Name", "CVV", "Expiry", "Meta", "Created At", "Updated At")
+				fmt.Println(strings.Repeat("-", 150))
+
+				// Print each credential in tabular format
+				for _, card := range resultListCards {
+					fmt.Printf(
+						"%-40s %-20s %-20s %-5s %-20s %-20s %-20s %-20s\n",
+						card.UUID,
+						card.Number,
+						card.Name,
+						card.CVV,
+						card.Expiry,
+						card.Meta,
+						card.CreatedAt.Format(time.DateTime),
+						card.UpdatedAt.Format(time.DateTime),
+					)
+				}
+			}
+		},
+	}
+	c.AddCommand(getCardsCmd)
+}
 func WithAddData(c *CLI) {
 	var (
 		data     model.VariousData
@@ -205,11 +269,17 @@ func WithListData(c *CLI) {
 }
 
 func WithDownload(c *CLI) {
-	var stringUUID string
+	var stringUUID, filePath string
 	var downloadCmd = &cobra.Command{
 		Use:   "download",
 		Short: "Download stored files by UUID",
 		Run: func(cmd *cobra.Command, args []string) {
+			if filePath == "" {
+				log.Fatal("no file path provided")
+			}
+			if stringUUID == "" {
+				log.Fatal("no uuid provided")
+			}
 			dataUUID, err := uuid.Parse(stringUUID)
 			if nil != err {
 				log.Fatalf("invalid data uuid: %s", err)
@@ -219,7 +289,7 @@ func WithDownload(c *CLI) {
 				log.Fatal(err)
 			}
 
-			errDownloadVariousData := c.srv.DownloadVariousData(ctxWithAuth, dataUUID)
+			errDownloadVariousData := c.srv.DownloadVariousData(ctxWithAuth, dataUUID, filePath)
 			if errDownloadVariousData != nil {
 				log.Fatal(errDownloadVariousData)
 			}
@@ -227,6 +297,7 @@ func WithDownload(c *CLI) {
 		},
 	}
 	downloadCmd.Flags().StringVarP(&stringUUID, "uuid", "u", "", "data entry UUID")
+	downloadCmd.Flags().StringVarP(&filePath, "path", "p", "", "path for the data file")
 	c.AddCommand(downloadCmd)
 }
 

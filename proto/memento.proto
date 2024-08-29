@@ -23,11 +23,13 @@ string uuid = 1;
 
 message CardData {
   string uuid = 1;
-  string login = 2;
-  string password = 3;
-  string meta = 4;
-  string created_at = 5;
-  string updated_at = 6;
+  string number = 2;
+  string name = 3;
+  string cvv = 4;
+  string expiry = 5;
+  string meta = 6;
+  string created_at = 7;
+  string updated_at = 8;
 }
 
 message VariousData {
@@ -64,18 +66,18 @@ message AddCredentialResponse{
   string error = 1;
 }
 
-message GetCredentialsRequest{}
+message ListCredentialsRequest{}
 
-message GetCredentialsResponse{
+message ListCredentialsResponse{
   repeated Credential credentials = 1;
   string error = 2;
 }
 
-message AddCardDataRequest{
+message AddCardsRequest{
   CardData cardData = 1;
 }
 
-message AddCardDataResponse{
+message AddCardsResponse{
   string error = 1;
 }
 
@@ -127,8 +129,8 @@ service Memento {
   rpc AddUser(AddUserRequest) returns (AddUserResponse);
   rpc GetToken(GetTokenRequest) returns (GetTokenResponse);
   rpc AddCredential(AddCredentialRequest) returns (AddCredentialResponse);
-  rpc GetCredentials(GetCredentialsRequest) returns (GetCredentialsResponse);
-  rpc AddCardData(AddCardDataRequest) returns (AddCardDataResponse);
+  rpc ListCredentials(ListCredentialsRequest) returns (ListCredentialsResponse);
+  rpc AddCards(AddCardsRequest) returns (AddCardsResponse);
   rpc ListCards(ListCardsRequest) returns (ListCardsResponse);
   rpc AddVariousData(stream AddVariousDataRequest) returns (AddVariousDataResponse);
   rpc DownloadVariousDataFile(DownloadVariousDataFileRequest) returns (stream DownloadVariousDataFileResponse);

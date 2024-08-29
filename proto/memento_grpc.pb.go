@@ -22,8 +22,8 @@ const (
 	Memento_AddUser_FullMethodName                 = "/api.grpc.Memento/AddUser"
 	Memento_GetToken_FullMethodName                = "/api.grpc.Memento/GetToken"
 	Memento_AddCredential_FullMethodName           = "/api.grpc.Memento/AddCredential"
-	Memento_GetCredentials_FullMethodName          = "/api.grpc.Memento/GetCredentials"
-	Memento_AddCardData_FullMethodName             = "/api.grpc.Memento/AddCardData"
+	Memento_ListCredentials_FullMethodName         = "/api.grpc.Memento/ListCredentials"
+	Memento_AddCards_FullMethodName                = "/api.grpc.Memento/AddCards"
 	Memento_ListCards_FullMethodName               = "/api.grpc.Memento/ListCards"
 	Memento_AddVariousData_FullMethodName          = "/api.grpc.Memento/AddVariousData"
 	Memento_DownloadVariousDataFile_FullMethodName = "/api.grpc.Memento/DownloadVariousDataFile"
@@ -37,8 +37,8 @@ type MementoClient interface {
 	AddUser(ctx context.Context, in *AddUserRequest, opts ...grpc.CallOption) (*AddUserResponse, error)
 	GetToken(ctx context.Context, in *GetTokenRequest, opts ...grpc.CallOption) (*GetTokenResponse, error)
 	AddCredential(ctx context.Context, in *AddCredentialRequest, opts ...grpc.CallOption) (*AddCredentialResponse, error)
-	GetCredentials(ctx context.Context, in *GetCredentialsRequest, opts ...grpc.CallOption) (*GetCredentialsResponse, error)
-	AddCardData(ctx context.Context, in *AddCardDataRequest, opts ...grpc.CallOption) (*AddCardDataResponse, error)
+	ListCredentials(ctx context.Context, in *ListCredentialsRequest, opts ...grpc.CallOption) (*ListCredentialsResponse, error)
+	AddCards(ctx context.Context, in *AddCardsRequest, opts ...grpc.CallOption) (*AddCardsResponse, error)
 	ListCards(ctx context.Context, in *ListCardsRequest, opts ...grpc.CallOption) (*ListCardsResponse, error)
 	AddVariousData(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[AddVariousDataRequest, AddVariousDataResponse], error)
 	DownloadVariousDataFile(ctx context.Context, in *DownloadVariousDataFileRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[DownloadVariousDataFileResponse], error)
@@ -83,20 +83,20 @@ func (c *mementoClient) AddCredential(ctx context.Context, in *AddCredentialRequ
 	return out, nil
 }
 
-func (c *mementoClient) GetCredentials(ctx context.Context, in *GetCredentialsRequest, opts ...grpc.CallOption) (*GetCredentialsResponse, error) {
+func (c *mementoClient) ListCredentials(ctx context.Context, in *ListCredentialsRequest, opts ...grpc.CallOption) (*ListCredentialsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetCredentialsResponse)
-	err := c.cc.Invoke(ctx, Memento_GetCredentials_FullMethodName, in, out, cOpts...)
+	out := new(ListCredentialsResponse)
+	err := c.cc.Invoke(ctx, Memento_ListCredentials_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *mementoClient) AddCardData(ctx context.Context, in *AddCardDataRequest, opts ...grpc.CallOption) (*AddCardDataResponse, error) {
+func (c *mementoClient) AddCards(ctx context.Context, in *AddCardsRequest, opts ...grpc.CallOption) (*AddCardsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AddCardDataResponse)
-	err := c.cc.Invoke(ctx, Memento_AddCardData_FullMethodName, in, out, cOpts...)
+	out := new(AddCardsResponse)
+	err := c.cc.Invoke(ctx, Memento_AddCards_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -162,8 +162,8 @@ type MementoServer interface {
 	AddUser(context.Context, *AddUserRequest) (*AddUserResponse, error)
 	GetToken(context.Context, *GetTokenRequest) (*GetTokenResponse, error)
 	AddCredential(context.Context, *AddCredentialRequest) (*AddCredentialResponse, error)
-	GetCredentials(context.Context, *GetCredentialsRequest) (*GetCredentialsResponse, error)
-	AddCardData(context.Context, *AddCardDataRequest) (*AddCardDataResponse, error)
+	ListCredentials(context.Context, *ListCredentialsRequest) (*ListCredentialsResponse, error)
+	AddCards(context.Context, *AddCardsRequest) (*AddCardsResponse, error)
 	ListCards(context.Context, *ListCardsRequest) (*ListCardsResponse, error)
 	AddVariousData(grpc.ClientStreamingServer[AddVariousDataRequest, AddVariousDataResponse]) error
 	DownloadVariousDataFile(*DownloadVariousDataFileRequest, grpc.ServerStreamingServer[DownloadVariousDataFileResponse]) error
@@ -187,11 +187,11 @@ func (UnimplementedMementoServer) GetToken(context.Context, *GetTokenRequest) (*
 func (UnimplementedMementoServer) AddCredential(context.Context, *AddCredentialRequest) (*AddCredentialResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddCredential not implemented")
 }
-func (UnimplementedMementoServer) GetCredentials(context.Context, *GetCredentialsRequest) (*GetCredentialsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetCredentials not implemented")
+func (UnimplementedMementoServer) ListCredentials(context.Context, *ListCredentialsRequest) (*ListCredentialsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListCredentials not implemented")
 }
-func (UnimplementedMementoServer) AddCardData(context.Context, *AddCardDataRequest) (*AddCardDataResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddCardData not implemented")
+func (UnimplementedMementoServer) AddCards(context.Context, *AddCardsRequest) (*AddCardsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddCards not implemented")
 }
 func (UnimplementedMementoServer) ListCards(context.Context, *ListCardsRequest) (*ListCardsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListCards not implemented")
@@ -280,38 +280,38 @@ func _Memento_AddCredential_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Memento_GetCredentials_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetCredentialsRequest)
+func _Memento_ListCredentials_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListCredentialsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MementoServer).GetCredentials(ctx, in)
+		return srv.(MementoServer).ListCredentials(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Memento_GetCredentials_FullMethodName,
+		FullMethod: Memento_ListCredentials_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MementoServer).GetCredentials(ctx, req.(*GetCredentialsRequest))
+		return srv.(MementoServer).ListCredentials(ctx, req.(*ListCredentialsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Memento_AddCardData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AddCardDataRequest)
+func _Memento_AddCards_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddCardsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MementoServer).AddCardData(ctx, in)
+		return srv.(MementoServer).AddCards(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Memento_AddCardData_FullMethodName,
+		FullMethod: Memento_AddCards_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MementoServer).AddCardData(ctx, req.(*AddCardDataRequest))
+		return srv.(MementoServer).AddCards(ctx, req.(*AddCardsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -390,12 +390,12 @@ var Memento_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Memento_AddCredential_Handler,
 		},
 		{
-			MethodName: "GetCredentials",
-			Handler:    _Memento_GetCredentials_Handler,
+			MethodName: "ListCredentials",
+			Handler:    _Memento_ListCredentials_Handler,
 		},
 		{
-			MethodName: "AddCardData",
-			Handler:    _Memento_AddCardData_Handler,
+			MethodName: "AddCards",
+			Handler:    _Memento_AddCards_Handler,
 		},
 		{
 			MethodName: "ListCards",

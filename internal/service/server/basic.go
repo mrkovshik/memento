@@ -2,10 +2,12 @@ package server
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/mrkovshik/memento/internal/auth"
 	config "github.com/mrkovshik/memento/internal/config/server"
@@ -38,7 +40,11 @@ func NewBasicService(storage storage, config *config.ServerConfig, logger *zap.S
 	}
 }
 
-func (s *BasicService) AddUser(ctx context.Context, user model.User) (string, error) {
+func (s *BasicService) AddUser(ctx context.Context, user model.User) (token string, err error) {
+	user.Password, err = hashPassword(user.Password)
+	if err != nil {
+		return "", err
+	}
 	newUser, err := s.storage.AddUser(ctx, user)
 	if err != nil {
 		return "", err
@@ -50,11 +56,14 @@ func (s *BasicService) GetUserByID(ctx context.Context, userID uint) (model.User
 }
 
 func (s *BasicService) GetToken(ctx context.Context, user model.User) (string, error) {
-	newUser, err := s.storage.GetUserByEmail(ctx, user.Email)
+	foundUser, err := s.storage.GetUserByEmail(ctx, user.Email)
 	if err != nil {
 		return "", err
 	}
-	return auth.BuildJWTString(newUser.ID)
+	if !checkPasswordHash(user.Password, foundUser.Password) {
+		return "", errors.New("password is incorrect")
+	}
+	return auth.BuildJWTString(foundUser.ID)
 }
 
 func (s *BasicService) AddCredential(ctx context.Context, credential model.Credential) error {
@@ -91,4 +100,14 @@ func (s *BasicService) ListVariousData(ctx context.Context) ([]model.VariousData
 func (s *BasicService) UpdateVariousDataStatus(ctx context.Context, dataUUID uuid.UUID, status model.DataStatus) error {
 
 	return s.storage.UpdateVariousDataStatusByUUID(ctx, dataUUID, status)
+}
+
+func hashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	return string(bytes), err
+}
+
+func checkPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }
