@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/google/uuid"
-	config "github.com/mrkovshik/memento/internal/config/client"
 	"github.com/mrkovshik/memento/internal/model"
 	"go.uber.org/zap"
 )
@@ -13,7 +12,7 @@ import (
 type BasicService struct {
 	client client
 	logger *zap.SugaredLogger
-	config *config.ClientConfig
+	//config *config.ClientConfig
 }
 
 func NewBasicService(requester client, logger *zap.SugaredLogger) *BasicService {
