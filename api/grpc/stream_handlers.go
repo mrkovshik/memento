@@ -1,77 +1,29 @@
 package grpc
 
 import (
-	"context"
 	"fmt"
 	"io"
 	"os"
-	"time"
 
+	"github.com/mrkovshik/memento/internal/auth"
 	"github.com/mrkovshik/memento/internal/model"
 	pb "github.com/mrkovshik/memento/proto"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
-
-func (s *Server) AddUser(ctx context.Context, request *pb.AddUserRequest) (*pb.AddUserResponse, error) {
-	token, err := s.service.AddUser(ctx, model.User{
-		Name:     request.User.Name,
-		Email:    request.User.Email,
-		Password: request.User.Password,
-	})
-	if err != nil {
-		return &pb.AddUserResponse{Error: err.Error()}, err
-	}
-	return &pb.AddUserResponse{
-		Token: token,
-	}, nil
-}
-
-func (s *Server) GetToken(ctx context.Context, request *pb.GetTokenRequest) (*pb.GetTokenResponse, error) {
-	token, err := s.service.GetToken(ctx, model.User{
-		Name:     request.User.Name,
-		Email:    request.User.Email,
-		Password: request.User.Password,
-	})
-	if err != nil {
-		return &pb.GetTokenResponse{Error: err.Error()}, err
-	}
-	return &pb.GetTokenResponse{
-		Token: token,
-	}, nil
-}
-
-func (s *Server) AddCredential(ctx context.Context, request *pb.AddCredentialRequest) (*pb.AddCredentialResponse, error) {
-	if err := s.service.AddCredential(ctx, model.Credential{
-		Login:    request.Credential.Login,
-		Password: request.Credential.Password,
-		Meta:     request.Credential.Meta,
-	}); err != nil {
-		return &pb.AddCredentialResponse{Error: err.Error()}, err
-	}
-	return &pb.AddCredentialResponse{}, nil
-}
-
-func (s *Server) GetCredentials(ctx context.Context, request *pb.GetCredentialsRequest) (*pb.GetCredentialsResponse, error) {
-
-	credentials, err := s.service.GetCredentials(ctx)
-	if err != nil {
-		return &pb.GetCredentialsResponse{Error: err.Error()}, err
-	}
-	response := make([]*pb.Credential, len(credentials))
-	for i, credential := range credentials {
-		response[i] = &pb.Credential{
-			Login:     credential.Login,
-			Password:  credential.Password,
-			Meta:      credential.Meta,
-			Uuid:      credential.UUID.String(),
-			CreatedAt: credential.CreatedAt.Format(time.DateTime),
-			UpdatedAt: credential.UpdatedAt.Format(time.DateTime),
-		}
-	}
-	return &pb.GetCredentialsResponse{Credentials: response}, nil
-}
 
 func (s *Server) AddVariousData(stream pb.Memento_AddVariousDataServer) error {
 	ctx := stream.Context()
+	userID, err := auth.GetUserIDFromContext(ctx)
+	if err != nil {
+		return stream.SendAndClose(&pb.AddVariousDataResponse{
+			UploadStatus: &pb.UploadStatus{
+				Success: false,
+				Message: "Failed to get user ID",
+			},
+			Error: err.Error(),
+		})
+	}
 	req, err := stream.Recv()
 	if err != nil {
 		return stream.SendAndClose(&pb.AddVariousDataResponse{
@@ -96,6 +48,7 @@ func (s *Server) AddVariousData(stream pb.Memento_AddVariousDataServer) error {
 
 	// Inserting entry to DB
 	dataModel, err := s.service.AddVariousData(ctx, model.VariousData{
+		UserID:   userID,
 		DataType: int(variousData.DataType),
 		Meta:     variousData.Meta,
 	})
@@ -110,7 +63,17 @@ func (s *Server) AddVariousData(stream pb.Memento_AddVariousDataServer) error {
 	}
 
 	// Prepare to receive file chunks
-	fileName := fmt.Sprintf(".data-%s", dataModel.UUID)
+	dirName := fmt.Sprintf("data/%d", userID)
+	fileName := fmt.Sprintf("./%s/%s", dirName, dataModel.UUID)
+	if err := os.MkdirAll(dirName, os.ModePerm); err != nil {
+		return stream.SendAndClose(&pb.AddVariousDataResponse{
+			UploadStatus: &pb.UploadStatus{
+				Success: false,
+				Message: "failed to create or open file",
+			},
+			Error: err.Error(),
+		})
+	}
 	dataFile, err := os.OpenFile(fileName, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return stream.SendAndClose(&pb.AddVariousDataResponse{
@@ -141,7 +104,7 @@ func (s *Server) AddVariousData(stream pb.Memento_AddVariousDataServer) error {
 		}
 
 		if chunk := req.GetChunk(); chunk != nil {
-			if _, err := dataFile.Write(chunk.Content); err != nil {
+			if _, err := dataFile.Write(chunk); err != nil {
 				return stream.SendAndClose(&pb.AddVariousDataResponse{
 					UploadStatus: &pb.UploadStatus{
 						Success: false,
@@ -159,4 +122,47 @@ func (s *Server) AddVariousData(stream pb.Memento_AddVariousDataServer) error {
 			Message: "Data saved successfully!",
 		},
 	})
+}
+
+func (s *Server) DownloadVariousDataFile(req *pb.DownloadVariousDataFileRequest, stream pb.Memento_DownloadVariousDataFileServer) error {
+	ctx := stream.Context()
+	userID, err := auth.GetUserIDFromContext(ctx)
+	// Construct the file path based on the file ID
+	filePath := fmt.Sprintf("./data/%d/%s", userID, req.DataUUID)
+
+	// Open the file for reading
+	file, err := os.Open(filePath)
+	if err != nil {
+		return status.Errorf(codes.NotFound, "file not found: %v", err)
+	}
+	defer file.Close()
+
+	// Define a buffer size for reading the file in chunks
+	const chunkSize = 1024 * 1024 // 1MB chunks TODO: move chunk size to config
+	buffer := make([]byte, chunkSize)
+
+	for {
+		// Read a chunk from the file
+		n, err := file.Read(buffer)
+		if err != nil && err != io.EOF {
+			return status.Errorf(codes.Internal, "failed to read file: %v", err)
+		}
+
+		if n == 0 {
+			break // Reached the end of the file
+		}
+
+		// Send the chunk to the client
+		chunk := buffer[:n] // Only send the bytes read
+
+		if err := stream.Send(&pb.DownloadVariousDataFileResponse{Chunk: chunk}); err != nil {
+			return status.Errorf(codes.Internal, "failed to send chunk: %v", err)
+		}
+
+		if err == io.EOF {
+			break
+		}
+	}
+
+	return nil
 }

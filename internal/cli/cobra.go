@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/mrkovshik/memento/internal/model"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
@@ -164,6 +165,69 @@ func WithAddData(c *CLI) {
 	addDataCmd.Flags().StringVarP(&data.Meta, "meta", "m", "AwesomeMeta", "user meta data")
 	addDataCmd.Flags().StringVarP(&filePath, "path", "p", "", "path to the data file")
 	c.AddCommand(addDataCmd)
+}
+
+func WithListData(c *CLI) {
+	var listDataCmd = &cobra.Command{
+		Use:   "list-data",
+		Short: "List all user's various data entries",
+		Run: func(cmd *cobra.Command, args []string) {
+			ctxWithAuth, err := addTokenToCtx(context.Background())
+			if err != nil {
+				log.Fatal(err)
+			}
+			resultList, errListVariousData := c.srv.ListVariousData(ctxWithAuth)
+			if errListVariousData != nil {
+				log.Fatal(errListVariousData)
+			}
+			if len(resultList) == 0 {
+				fmt.Println("No data entries found!")
+			} else {
+				// Print table header
+				fmt.Printf("%-40s %-20s %-20s %-20s\n", "UUID", "Meta", "Created At", "Updated At")
+				fmt.Println(strings.Repeat("-", 150))
+
+				// Print each credential in tabular format
+				for _, dataEntry := range resultList {
+					fmt.Printf(
+						"%-40s %-20s %-20s %-20s\n",
+						dataEntry.UUID,
+						dataEntry.Meta,
+						dataEntry.CreatedAt.Format(time.DateTime),
+						dataEntry.UpdatedAt.Format(time.DateTime),
+					)
+				}
+			}
+		},
+	}
+	c.AddCommand(listDataCmd)
+
+}
+
+func WithDownload(c *CLI) {
+	var stringUUID string
+	var downloadCmd = &cobra.Command{
+		Use:   "download",
+		Short: "Download stored files by UUID",
+		Run: func(cmd *cobra.Command, args []string) {
+			dataUUID, err := uuid.Parse(stringUUID)
+			if nil != err {
+				log.Fatalf("invalid data uuid: %s", err)
+			}
+			ctxWithAuth, err := addTokenToCtx(context.Background())
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			errDownloadVariousData := c.srv.DownloadVariousData(ctxWithAuth, dataUUID)
+			if errDownloadVariousData != nil {
+				log.Fatal(errDownloadVariousData)
+			}
+			fmt.Println("data downloaded successfully!")
+		},
+	}
+	downloadCmd.Flags().StringVarP(&stringUUID, "uuid", "u", "", "data entry UUID")
+	c.AddCommand(downloadCmd)
 }
 
 func (c *CLI) Run() error {

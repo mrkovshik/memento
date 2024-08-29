@@ -44,8 +44,8 @@ type VariousData struct {
 	ID        uint
 	UserID    uint `db:"user_id"`
 	UUID      uuid.UUID
-	DataType  int    `db:"data_type"`
-	FilePath  string `db:"file_path"`
+	Title     string
+	DataType  int `db:"data_type"`
 	Status    DataStatus
 	Meta      string
 	CreatedAt time.Time `db:"created_at"`

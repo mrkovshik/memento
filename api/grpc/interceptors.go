@@ -123,10 +123,6 @@ func Authenticate(svc *server.BasicService, logger *zap.SugaredLogger) grpc.Unar
 // AuthenticateStream returns a StreamServerInterceptor that performs authentication
 func AuthenticateStream(svc *server.BasicService, logger *zap.SugaredLogger) grpc.StreamServerInterceptor {
 	return func(srv interface{}, stream grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
-		// Bypass authentication for specific methods
-		if info.FullMethod == "/api.grpc.Memento/AddUser" || info.FullMethod == "/api.grpc.Memento/GetToken" {
-			return handler(srv, stream)
-		}
 
 		// Log the incoming request information
 		logger.Infof("Processing stream request for method: %s", info.FullMethod)

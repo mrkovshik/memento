@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 
+	"github.com/google/uuid"
 	config "github.com/mrkovshik/memento/internal/config/client"
 	"github.com/mrkovshik/memento/internal/model"
 	"go.uber.org/zap"
@@ -26,8 +27,10 @@ type client interface {
 	Register(ctx context.Context, user model.User) error
 	Login(ctx context.Context, user model.User) error
 	AddCredentials(ctx context.Context, credential model.Credential) (err error)
-	GetCredentials(ctx context.Context) ([]model.Credential, error)
+	ListCredentials(ctx context.Context) ([]model.Credential, error)
 	AddVariousData(ctx context.Context, dataModel model.VariousData, data []byte) (err error)
+	ListVariousData(ctx context.Context) (data []model.VariousData, err error)
+	DownloadVariousData(ctx context.Context, dataUUID uuid.UUID) error
 }
 
 func (c *BasicService) AddUser(ctx context.Context, user model.User) error {
@@ -43,7 +46,7 @@ func (c *BasicService) AddCredentials(ctx context.Context, credential model.Cred
 }
 
 func (c *BasicService) GetCredentials(ctx context.Context) ([]model.Credential, error) {
-	return c.client.GetCredentials(ctx)
+	return c.client.ListCredentials(ctx)
 }
 
 func (c *BasicService) AddVariousDataFromFile(ctx context.Context, filePath string, dataModel model.VariousData) error {
@@ -56,4 +59,12 @@ func (c *BasicService) AddVariousDataFromFile(ctx context.Context, filePath stri
 		return err
 	}
 	return nil
+}
+
+func (c *BasicService) ListVariousData(ctx context.Context) ([]model.VariousData, error) {
+	return c.client.ListVariousData(ctx)
+}
+
+func (c *BasicService) DownloadVariousData(ctx context.Context, dataUUID uuid.UUID) error {
+	return c.client.DownloadVariousData(ctx, dataUUID)
 }

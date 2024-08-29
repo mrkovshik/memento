@@ -73,8 +73,8 @@ func (s *PostgresStorage) AddVariousData(ctx context.Context, data model.Various
 	if err != nil {
 		return model.VariousData{}, err
 	}
-	query := `INSERT INTO various_data (user_id, uuid, data_type, file_path, meta, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7)`
-	_, errExecContext := s.db.ExecContext(ctx, query, data.UserID, currentUUID, data.DataType, data.FilePath, data.Meta, time.Now(), time.Now())
+	query := `INSERT INTO various_data (user_id, uuid, data_type, meta, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6)`
+	_, errExecContext := s.db.ExecContext(ctx, query, data.UserID, currentUUID, data.DataType, data.Meta, time.Now(), time.Now())
 	if errExecContext != nil {
 		return model.VariousData{}, errExecContext
 	}
@@ -87,6 +87,14 @@ func (s *PostgresStorage) GetVariousDataByUUID(ctx context.Context, uuid uuid.UU
 		return model.VariousData{}, err
 	}
 	return result, nil
+}
+
+func (s *PostgresStorage) GetVariousDataByUserID(ctx context.Context, userID uint) ([]model.VariousData, error) {
+	var data []model.VariousData
+	if err := s.db.SelectContext(ctx, &data, "SELECT * FROM various_data WHERE user_id = $1", userID); err != nil {
+		return nil, err
+	}
+	return data, nil
 }
 
 func (s *PostgresStorage) UpdateVariousDataStatusByUUID(ctx context.Context, uuid uuid.UUID, status model.DataStatus) error {

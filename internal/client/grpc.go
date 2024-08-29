@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"time"
 
@@ -81,7 +82,7 @@ func (c *Client) AddCredentials(ctx context.Context, credential model.Credential
 	return err
 }
 
-func (c *Client) GetCredentials(ctx context.Context) ([]model.Credential, error) {
+func (c *Client) ListCredentials(ctx context.Context) ([]model.Credential, error) {
 
 	res, err := c.MementoClient.GetCredentials(ctx, &proto.GetCredentialsRequest{})
 	if err != nil {
@@ -139,9 +140,7 @@ func (c *Client) AddVariousData(ctx context.Context, dataModel model.VariousData
 
 		if err := stream.Send(&proto.AddVariousDataRequest{
 			Data: &proto.AddVariousDataRequest_Chunk{
-				Chunk: &proto.FileChunk{
-					Content: data[i:end],
-				},
+				Chunk: data[i:end],
 			},
 		}); err != nil {
 			return err
@@ -160,6 +159,67 @@ func (c *Client) AddVariousData(ctx context.Context, dataModel model.VariousData
 	uploadStatus := streamResp.GetUploadStatus()
 	if !uploadStatus.GetSuccess() {
 		return fmt.Errorf("upload data fail: %s", uploadStatus.GetMessage())
+	}
+	return nil
+}
+
+func (c *Client) ListVariousData(ctx context.Context) ([]model.VariousData, error) {
+
+	res, err := c.MementoClient.ListVariousData(ctx, &proto.ListVariousDataRequest{})
+	if err != nil {
+		return nil, err
+	}
+	data := make([]model.VariousData, len(res.Data))
+	for i, currentData := range res.Data {
+		data[i] = model.VariousData{
+			DataType: int(currentData.DataType),
+			Meta:     currentData.Meta,
+		}
+		currentUUID, err := uuid.Parse(currentData.Uuid)
+		if err != nil {
+			return nil, err
+		}
+		data[i].UUID = currentUUID
+		createdAt, err := time.Parse(time.DateTime, currentData.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		data[i].CreatedAt = createdAt
+		updatedAt, err := time.Parse(time.DateTime, currentData.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+		data[i].UpdatedAt = updatedAt
+	}
+	return data, nil
+}
+
+func (c *Client) DownloadVariousData(ctx context.Context, dataUUID uuid.UUID) error {
+	stream, err := c.MementoClient.DownloadVariousDataFile(ctx, &proto.DownloadVariousDataFileRequest{
+		DataUUID: dataUUID.String(),
+	})
+	if err != nil {
+		return err
+	}
+	// Open the output file
+	outFile, err := os.Create(dataUUID.String())
+	if err != nil {
+		return err
+	}
+	defer outFile.Close()
+	// Receive chunks and write to the output file
+	for {
+		chunk, err := stream.Recv()
+		if err != nil {
+			if err == io.EOF {
+				break // Finished receiving
+			}
+			return err
+		}
+
+		if _, err := outFile.Write(chunk.Chunk); err != nil {
+			return err
+		}
 	}
 	return nil
 }

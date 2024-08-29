@@ -38,6 +38,8 @@ func main() {
 		cli.WithAddCreds,
 		cli.WithGetCreds,
 		cli.WithAddData,
+		cli.WithDownload,
+		cli.WithListData,
 	)
 	if err := clInterface.Run(); err != nil {
 		sugar.Fatal(err)

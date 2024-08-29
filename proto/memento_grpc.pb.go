@@ -19,13 +19,15 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Memento_AddUser_FullMethodName        = "/api.grpc.Memento/AddUser"
-	Memento_GetToken_FullMethodName       = "/api.grpc.Memento/GetToken"
-	Memento_AddCredential_FullMethodName  = "/api.grpc.Memento/AddCredential"
-	Memento_GetCredentials_FullMethodName = "/api.grpc.Memento/GetCredentials"
-	Memento_AddCardData_FullMethodName    = "/api.grpc.Memento/AddCardData"
-	Memento_GetCards_FullMethodName       = "/api.grpc.Memento/GetCards"
-	Memento_AddVariousData_FullMethodName = "/api.grpc.Memento/AddVariousData"
+	Memento_AddUser_FullMethodName                 = "/api.grpc.Memento/AddUser"
+	Memento_GetToken_FullMethodName                = "/api.grpc.Memento/GetToken"
+	Memento_AddCredential_FullMethodName           = "/api.grpc.Memento/AddCredential"
+	Memento_GetCredentials_FullMethodName          = "/api.grpc.Memento/GetCredentials"
+	Memento_AddCardData_FullMethodName             = "/api.grpc.Memento/AddCardData"
+	Memento_ListCards_FullMethodName               = "/api.grpc.Memento/ListCards"
+	Memento_AddVariousData_FullMethodName          = "/api.grpc.Memento/AddVariousData"
+	Memento_DownloadVariousDataFile_FullMethodName = "/api.grpc.Memento/DownloadVariousDataFile"
+	Memento_ListVariousData_FullMethodName         = "/api.grpc.Memento/ListVariousData"
 )
 
 // MementoClient is the client API for Memento service.
@@ -37,8 +39,10 @@ type MementoClient interface {
 	AddCredential(ctx context.Context, in *AddCredentialRequest, opts ...grpc.CallOption) (*AddCredentialResponse, error)
 	GetCredentials(ctx context.Context, in *GetCredentialsRequest, opts ...grpc.CallOption) (*GetCredentialsResponse, error)
 	AddCardData(ctx context.Context, in *AddCardDataRequest, opts ...grpc.CallOption) (*AddCardDataResponse, error)
-	GetCards(ctx context.Context, in *GetCardsRequest, opts ...grpc.CallOption) (*GetCardsResponse, error)
+	ListCards(ctx context.Context, in *ListCardsRequest, opts ...grpc.CallOption) (*ListCardsResponse, error)
 	AddVariousData(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[AddVariousDataRequest, AddVariousDataResponse], error)
+	DownloadVariousDataFile(ctx context.Context, in *DownloadVariousDataFileRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[DownloadVariousDataFileResponse], error)
+	ListVariousData(ctx context.Context, in *ListVariousDataRequest, opts ...grpc.CallOption) (*ListVariousDataResponse, error)
 }
 
 type mementoClient struct {
@@ -99,10 +103,10 @@ func (c *mementoClient) AddCardData(ctx context.Context, in *AddCardDataRequest,
 	return out, nil
 }
 
-func (c *mementoClient) GetCards(ctx context.Context, in *GetCardsRequest, opts ...grpc.CallOption) (*GetCardsResponse, error) {
+func (c *mementoClient) ListCards(ctx context.Context, in *ListCardsRequest, opts ...grpc.CallOption) (*ListCardsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetCardsResponse)
-	err := c.cc.Invoke(ctx, Memento_GetCards_FullMethodName, in, out, cOpts...)
+	out := new(ListCardsResponse)
+	err := c.cc.Invoke(ctx, Memento_ListCards_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -122,6 +126,35 @@ func (c *mementoClient) AddVariousData(ctx context.Context, opts ...grpc.CallOpt
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type Memento_AddVariousDataClient = grpc.ClientStreamingClient[AddVariousDataRequest, AddVariousDataResponse]
 
+func (c *mementoClient) DownloadVariousDataFile(ctx context.Context, in *DownloadVariousDataFileRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[DownloadVariousDataFileResponse], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &Memento_ServiceDesc.Streams[1], Memento_DownloadVariousDataFile_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[DownloadVariousDataFileRequest, DownloadVariousDataFileResponse]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type Memento_DownloadVariousDataFileClient = grpc.ServerStreamingClient[DownloadVariousDataFileResponse]
+
+func (c *mementoClient) ListVariousData(ctx context.Context, in *ListVariousDataRequest, opts ...grpc.CallOption) (*ListVariousDataResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListVariousDataResponse)
+	err := c.cc.Invoke(ctx, Memento_ListVariousData_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MementoServer is the server API for Memento service.
 // All implementations must embed UnimplementedMementoServer
 // for forward compatibility.
@@ -131,8 +164,10 @@ type MementoServer interface {
 	AddCredential(context.Context, *AddCredentialRequest) (*AddCredentialResponse, error)
 	GetCredentials(context.Context, *GetCredentialsRequest) (*GetCredentialsResponse, error)
 	AddCardData(context.Context, *AddCardDataRequest) (*AddCardDataResponse, error)
-	GetCards(context.Context, *GetCardsRequest) (*GetCardsResponse, error)
+	ListCards(context.Context, *ListCardsRequest) (*ListCardsResponse, error)
 	AddVariousData(grpc.ClientStreamingServer[AddVariousDataRequest, AddVariousDataResponse]) error
+	DownloadVariousDataFile(*DownloadVariousDataFileRequest, grpc.ServerStreamingServer[DownloadVariousDataFileResponse]) error
+	ListVariousData(context.Context, *ListVariousDataRequest) (*ListVariousDataResponse, error)
 	mustEmbedUnimplementedMementoServer()
 }
 
@@ -158,11 +193,17 @@ func (UnimplementedMementoServer) GetCredentials(context.Context, *GetCredential
 func (UnimplementedMementoServer) AddCardData(context.Context, *AddCardDataRequest) (*AddCardDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddCardData not implemented")
 }
-func (UnimplementedMementoServer) GetCards(context.Context, *GetCardsRequest) (*GetCardsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetCards not implemented")
+func (UnimplementedMementoServer) ListCards(context.Context, *ListCardsRequest) (*ListCardsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListCards not implemented")
 }
 func (UnimplementedMementoServer) AddVariousData(grpc.ClientStreamingServer[AddVariousDataRequest, AddVariousDataResponse]) error {
 	return status.Errorf(codes.Unimplemented, "method AddVariousData not implemented")
+}
+func (UnimplementedMementoServer) DownloadVariousDataFile(*DownloadVariousDataFileRequest, grpc.ServerStreamingServer[DownloadVariousDataFileResponse]) error {
+	return status.Errorf(codes.Unimplemented, "method DownloadVariousDataFile not implemented")
+}
+func (UnimplementedMementoServer) ListVariousData(context.Context, *ListVariousDataRequest) (*ListVariousDataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListVariousData not implemented")
 }
 func (UnimplementedMementoServer) mustEmbedUnimplementedMementoServer() {}
 func (UnimplementedMementoServer) testEmbeddedByValue()                 {}
@@ -275,20 +316,20 @@ func _Memento_AddCardData_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Memento_GetCards_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetCardsRequest)
+func _Memento_ListCards_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListCardsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MementoServer).GetCards(ctx, in)
+		return srv.(MementoServer).ListCards(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Memento_GetCards_FullMethodName,
+		FullMethod: Memento_ListCards_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MementoServer).GetCards(ctx, req.(*GetCardsRequest))
+		return srv.(MementoServer).ListCards(ctx, req.(*ListCardsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -299,6 +340,35 @@ func _Memento_AddVariousData_Handler(srv interface{}, stream grpc.ServerStream) 
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type Memento_AddVariousDataServer = grpc.ClientStreamingServer[AddVariousDataRequest, AddVariousDataResponse]
+
+func _Memento_DownloadVariousDataFile_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(DownloadVariousDataFileRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(MementoServer).DownloadVariousDataFile(m, &grpc.GenericServerStream[DownloadVariousDataFileRequest, DownloadVariousDataFileResponse]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type Memento_DownloadVariousDataFileServer = grpc.ServerStreamingServer[DownloadVariousDataFileResponse]
+
+func _Memento_ListVariousData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListVariousDataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MementoServer).ListVariousData(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Memento_ListVariousData_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MementoServer).ListVariousData(ctx, req.(*ListVariousDataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
 
 // Memento_ServiceDesc is the grpc.ServiceDesc for Memento service.
 // It's only intended for direct use with grpc.RegisterService,
@@ -328,8 +398,12 @@ var Memento_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Memento_AddCardData_Handler,
 		},
 		{
-			MethodName: "GetCards",
-			Handler:    _Memento_GetCards_Handler,
+			MethodName: "ListCards",
+			Handler:    _Memento_ListCards_Handler,
+		},
+		{
+			MethodName: "ListVariousData",
+			Handler:    _Memento_ListVariousData_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
@@ -337,6 +411,11 @@ var Memento_ServiceDesc = grpc.ServiceDesc{
 			StreamName:    "AddVariousData",
 			Handler:       _Memento_AddVariousData_Handler,
 			ClientStreams: true,
+		},
+		{
+			StreamName:    "DownloadVariousDataFile",
+			Handler:       _Memento_DownloadVariousDataFile_Handler,
+			ServerStreams: true,
 		},
 	},
 	Metadata: "proto/memento.proto",

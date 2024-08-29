@@ -11,8 +11,8 @@ type Service interface {
 	AddUser(ctx context.Context, user model.User) (string, error)
 	GetToken(ctx context.Context, user model.User) (string, error)
 	AddCredential(ctx context.Context, credential model.Credential) error
-	GetCredentials(ctx context.Context) ([]model.Credential, error)
+	ListCredentials(ctx context.Context) ([]model.Credential, error)
 	AddVariousData(ctx context.Context, data model.VariousData) (model.VariousData, error)
-	SaveDataToFile(ctx context.Context, fileData []byte, dataUUID uuid.UUID) error
+	ListVariousData(ctx context.Context) ([]model.VariousData, error)
 	UpdateVariousDataStatus(ctx context.Context, dataUUID uuid.UUID, status model.DataStatus) error
 }

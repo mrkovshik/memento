@@ -79,22 +79,10 @@ message AddCardDataResponse{
   string error = 1;
 }
 
-message GetCardsRequest{}
+message ListCardsRequest{}
 
-message GetCardsResponse{
+message ListCardsResponse{
   repeated CardData cards = 1;
-  string error = 2;
-}
-
-message AddVariousDataRequest{
-  oneof data {
-    VariousData variousData = 1;
-    FileChunk chunk = 2;
-  }
-}
-
-message AddVariousDataResponse{
-  UploadStatus uploadStatus = 1;
   string error = 2;
 }
 
@@ -107,6 +95,33 @@ message UploadStatus {
   string message = 2;
 }
 
+message AddVariousDataRequest{
+  oneof data {
+    VariousData variousData = 1;
+    bytes chunk = 2;
+  }
+}
+
+message AddVariousDataResponse{
+  UploadStatus uploadStatus = 1;
+  string error = 2;
+}
+
+message DownloadVariousDataFileRequest{
+  string dataUUID = 1;
+}
+
+message DownloadVariousDataFileResponse{
+    bytes chunk = 1;
+}
+
+message ListVariousDataRequest{}
+
+message ListVariousDataResponse{
+  repeated VariousData data = 1;
+  string error = 2;
+}
+
 
 service Memento {
   rpc AddUser(AddUserRequest) returns (AddUserResponse);
@@ -114,8 +129,10 @@ service Memento {
   rpc AddCredential(AddCredentialRequest) returns (AddCredentialResponse);
   rpc GetCredentials(GetCredentialsRequest) returns (GetCredentialsResponse);
   rpc AddCardData(AddCardDataRequest) returns (AddCardDataResponse);
-  rpc GetCards(GetCardsRequest) returns (GetCardsResponse);
+  rpc ListCards(ListCardsRequest) returns (ListCardsResponse);
   rpc AddVariousData(stream AddVariousDataRequest) returns (AddVariousDataResponse);
+  rpc DownloadVariousDataFile(DownloadVariousDataFileRequest) returns (stream DownloadVariousDataFileResponse);
+  rpc ListVariousData(ListVariousDataRequest) returns (ListVariousDataResponse);
 }
 
 //protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/memento.proto
