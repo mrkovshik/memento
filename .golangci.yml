@@ -25,7 +25,6 @@ linters:
     - contextcheck
     - nilnil
     - nilerr
-    - gci
     - asciicheck
     - unconvert
     - loggercheck
