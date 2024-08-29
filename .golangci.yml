@@ -22,7 +22,6 @@ linters:
     - ineffassign
     - staticcheck
     - unused
-    - containedctx
     - contextcheck
     - nilnil
     - nilerr

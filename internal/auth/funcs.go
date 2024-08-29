@@ -5,7 +5,9 @@ import (
 	"errors"
 )
 
-const ClaimsKey string = "claims"
+type contextKey string
+
+const ClaimsKey contextKey = "claims"
 
 func GetUserIDFromContext(ctx context.Context) (uint, error) {
 	claimsPointer, ok := ctx.Value(ClaimsKey).(*Claims)

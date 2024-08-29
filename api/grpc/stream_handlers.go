@@ -127,6 +127,9 @@ func (s *Server) AddVariousData(stream pb.Memento_AddVariousDataServer) error {
 func (s *Server) DownloadVariousDataFile(req *pb.DownloadVariousDataFileRequest, stream pb.Memento_DownloadVariousDataFileServer) error {
 	ctx := stream.Context()
 	userID, err := auth.GetUserIDFromContext(ctx)
+	if err != nil {
+		return status.Errorf(codes.Unauthenticated, "user ID is missing: %v", err)
+	}
 	// Construct the file path based on the file ID
 	filePath := fmt.Sprintf("./data/%d/%s", userID, req.DataUUID)
 

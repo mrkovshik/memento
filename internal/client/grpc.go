@@ -40,7 +40,7 @@ func (c *Client) Register(ctx context.Context, user model.User) error {
 	}
 	defer file.Close()
 
-	if _, err := fmt.Fprintf(file, token); err != nil {
+	if _, err := fmt.Fprint(file, token); err != nil {
 		return err
 	}
 	return nil
@@ -64,7 +64,7 @@ func (c *Client) Login(ctx context.Context, user model.User) error {
 	}
 	defer file.Close()
 
-	if _, err := fmt.Fprintf(file, token); err != nil {
+	if _, err := fmt.Fprint(file, token); err != nil {
 		return err
 	}
 	return nil
