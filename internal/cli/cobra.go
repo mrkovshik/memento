@@ -10,11 +10,11 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/mrkovshik/memento/internal/model"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/metadata"
 
+	"github.com/mrkovshik/memento/internal/model"
 	service "github.com/mrkovshik/memento/internal/service/client"
 )
 

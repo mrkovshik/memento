@@ -5,8 +5,9 @@ import (
 	"os"
 
 	"github.com/google/uuid"
-	"github.com/mrkovshik/memento/internal/model"
 	"go.uber.org/zap"
+
+	"github.com/mrkovshik/memento/internal/model"
 )
 
 type BasicService struct {
