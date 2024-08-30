@@ -115,16 +115,16 @@ func (c *Client) ListCredentials(ctx context.Context) ([]model.Credential, error
 }
 
 func (c *Client) AddCard(ctx context.Context, card model.CardData) error {
-	req := &proto.AddCardsRequest{
+	req := &proto.AddCardRequest{
 		CardData: &proto.CardData{ //TODO: encrypt data
 			Number: card.Number,
 			Name:   card.Name,
-			Cvv:    card.CVV,
+			Cvv:    uint32(card.CVV),
 			Expiry: card.Expiry,
 			Meta:   card.Meta,
 		},
 	}
-	_, err := c.MementoClient.AddCards(ctx, req)
+	_, err := c.MementoClient.AddCard(ctx, req)
 	return err
 }
 
@@ -139,7 +139,7 @@ func (c *Client) ListCards(ctx context.Context) ([]model.CardData, error) {
 		cards[i] = model.CardData{
 			Number: card.Number,
 			Name:   card.Name,
-			CVV:    card.Cvv,
+			CVV:    uint(card.Cvv),
 			Meta:   card.Meta,
 			Expiry: card.Expiry,
 		}

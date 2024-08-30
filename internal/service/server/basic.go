@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"errors"
-	"time"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -19,6 +18,8 @@ type storage interface {
 	GetUserByID(ctx context.Context, userID uint) (model.User, error)
 	AddCredential(ctx context.Context, credential model.Credential) error
 	GetCredentialsByUserID(ctx context.Context, userID uint) ([]model.Credential, error)
+	AddCard(ctx context.Context, card model.CardData) error
+	GetCardsByUserID(ctx context.Context, userID uint) ([]model.CardData, error)
 	GetUserByEmail(ctx context.Context, email string) (model.User, error)
 	AddVariousData(ctx context.Context, data model.VariousData) (model.VariousData, error)
 	GetVariousDataByUUID(ctx context.Context, uuid uuid.UUID) (model.VariousData, error)
@@ -71,7 +72,12 @@ func (s *BasicService) AddCredential(ctx context.Context, credential model.Crede
 	if err != nil {
 		return err
 	}
+	credentialUUID, err := uuid.NewV6()
+	if err != nil {
+		return err
+	}
 	credential.UserID = userID
+	credential.UUID = credentialUUID
 	return s.storage.AddCredential(ctx, credential)
 }
 
@@ -83,9 +89,39 @@ func (s *BasicService) ListCredentials(ctx context.Context) ([]model.Credential,
 	return s.storage.GetCredentialsByUserID(ctx, userID)
 }
 
+func (s *BasicService) AddCard(ctx context.Context, card model.CardData) error {
+	userID, err := auth.GetUserIDFromContext(ctx)
+	if err != nil {
+		return err
+	}
+	cardUUID, err := uuid.NewV6()
+	if err != nil {
+		return err
+	}
+	card.UserID = userID
+	card.UUID = cardUUID
+	return s.storage.AddCard(ctx, card)
+}
+
+func (s *BasicService) ListCards(ctx context.Context) ([]model.CardData, error) {
+	userID, err := auth.GetUserIDFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return s.storage.GetCardsByUserID(ctx, userID)
+}
+
 func (s *BasicService) AddVariousData(ctx context.Context, data model.VariousData) (model.VariousData, error) {
-	data.CreatedAt = time.Now()
-	data.UpdatedAt = time.Now()
+	userID, err := auth.GetUserIDFromContext(ctx)
+	if err != nil {
+		return model.VariousData{}, err
+	}
+	credentialUUID, err := uuid.NewV6()
+	if err != nil {
+		return model.VariousData{}, err
+	}
+	data.UUID = credentialUUID
+	data.UserID = userID
 	return s.storage.AddVariousData(ctx, data)
 }
 
@@ -98,7 +134,6 @@ func (s *BasicService) ListVariousData(ctx context.Context) ([]model.VariousData
 }
 
 func (s *BasicService) UpdateVariousDataStatus(ctx context.Context, dataUUID uuid.UUID, status model.DataStatus) error {
-
 	return s.storage.UpdateVariousDataStatusByUUID(ctx, dataUUID, status)
 }
 

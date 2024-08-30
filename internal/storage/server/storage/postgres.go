@@ -48,12 +48,8 @@ func (s *PostgresStorage) GetUserByID(ctx context.Context, id uint) (model.User,
 }
 
 func (s *PostgresStorage) AddCredential(ctx context.Context, credential model.Credential) error {
-	currentUUID, err := uuid.NewV6()
-	if err != nil {
-		return err
-	}
 	query := `INSERT INTO credentials_data (user_id, uuid, login, password, meta, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7)`
-	_, errExecContext := s.db.ExecContext(ctx, query, credential.UserID, currentUUID, credential.Login, credential.Password, credential.Meta, time.Now(), time.Now())
+	_, errExecContext := s.db.ExecContext(ctx, query, credential.UserID, credential.UUID, credential.Login, credential.Password, credential.Meta, time.Now(), time.Now())
 	if errExecContext != nil {
 		return errExecContext
 	}
@@ -68,17 +64,30 @@ func (s *PostgresStorage) GetCredentialsByUserID(ctx context.Context, userID uin
 	return credentials, nil
 }
 
-func (s *PostgresStorage) AddVariousData(ctx context.Context, data model.VariousData) (model.VariousData, error) {
-	currentUUID, err := uuid.NewV6()
-	if err != nil {
-		return model.VariousData{}, err
+func (s *PostgresStorage) AddCard(ctx context.Context, card model.CardData) error {
+	query := `INSERT INTO card_data (user_id, uuid, number, name , cvv, expiry, meta, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
+	_, errExecContext := s.db.ExecContext(ctx, query, card.UserID, card.UUID, card.Number, card.Name, card.CVV, card.Expiry, card.Meta, time.Now(), time.Now())
+	if errExecContext != nil {
+		return errExecContext
 	}
+	return nil
+}
+
+func (s *PostgresStorage) GetCardsByUserID(ctx context.Context, userID uint) ([]model.CardData, error) {
+	var cards []model.CardData
+	if err := s.db.SelectContext(ctx, &cards, "SELECT * FROM card_data WHERE user_id = $1", userID); err != nil {
+		return nil, err
+	}
+	return cards, nil
+}
+
+func (s *PostgresStorage) AddVariousData(ctx context.Context, data model.VariousData) (model.VariousData, error) {
 	query := `INSERT INTO various_data (user_id, uuid, data_type, meta, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6)`
-	_, errExecContext := s.db.ExecContext(ctx, query, data.UserID, currentUUID, data.DataType, data.Meta, time.Now(), time.Now())
+	_, errExecContext := s.db.ExecContext(ctx, query, data.UserID, data.UUID, data.DataType, data.Meta, time.Now(), time.Now())
 	if errExecContext != nil {
 		return model.VariousData{}, errExecContext
 	}
-	return s.GetVariousDataByUUID(ctx, currentUUID)
+	return s.GetVariousDataByUUID(ctx, data.UUID)
 }
 
 func (s *PostgresStorage) GetVariousDataByUUID(ctx context.Context, uuid uuid.UUID) (model.VariousData, error) {

@@ -30,9 +30,9 @@ type CardData struct {
 	ID        uint
 	UserID    uint `db:"user_id"`
 	UUID      uuid.UUID
-	Number    string
+	Number    uint64
 	Expiry    string
-	CVV       string
+	CVV       uint
 	Name      string
 	Meta      string
 	CreatedAt time.Time `db:"created_at"`

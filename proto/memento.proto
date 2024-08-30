@@ -23,9 +23,9 @@ string uuid = 1;
 
 message CardData {
   string uuid = 1;
-  string number = 2;
+  uint64 number = 2;
   string name = 3;
-  string cvv = 4;
+  uint32 cvv = 4;
   string expiry = 5;
   string meta = 6;
   string created_at = 7;
@@ -73,11 +73,11 @@ message ListCredentialsResponse{
   string error = 2;
 }
 
-message AddCardsRequest{
+message AddCardRequest{
   CardData cardData = 1;
 }
 
-message AddCardsResponse{
+message AddCardResponse{
   string error = 1;
 }
 
@@ -130,7 +130,7 @@ service Memento {
   rpc GetToken(GetTokenRequest) returns (GetTokenResponse);
   rpc AddCredential(AddCredentialRequest) returns (AddCredentialResponse);
   rpc ListCredentials(ListCredentialsRequest) returns (ListCredentialsResponse);
-  rpc AddCards(AddCardsRequest) returns (AddCardsResponse);
+  rpc AddCard(AddCardRequest) returns (AddCardResponse);
   rpc ListCards(ListCardsRequest) returns (ListCardsResponse);
   rpc AddVariousData(stream AddVariousDataRequest) returns (AddVariousDataResponse);
   rpc DownloadVariousDataFile(DownloadVariousDataFileRequest) returns (stream DownloadVariousDataFileResponse);

@@ -67,6 +67,41 @@ func (s *Server) ListCredentials(ctx context.Context, _ *pb.ListCredentialsReque
 	return &pb.ListCredentialsResponse{Credentials: response}, nil
 }
 
+func (s *Server) AddCard(ctx context.Context, request *pb.AddCardRequest) (*pb.AddCardResponse, error) {
+	if err := s.service.AddCard(ctx, model.CardData{
+		Number: request.CardData.Number,
+		Name:   request.CardData.Name,
+		CVV:    uint(request.CardData.Cvv),
+		Expiry: request.CardData.Expiry,
+		Meta:   request.CardData.Meta,
+	}); err != nil {
+		return &pb.AddCardResponse{Error: err.Error()}, err
+	}
+	return &pb.AddCardResponse{}, nil
+}
+
+func (s *Server) ListCards(ctx context.Context, _ *pb.ListCardsRequest) (*pb.ListCardsResponse, error) {
+
+	cards, err := s.service.ListCards(ctx)
+	if err != nil {
+		return &pb.ListCardsResponse{Error: err.Error()}, err
+	}
+	response := make([]*pb.CardData, len(cards))
+	for i, card := range cards {
+		response[i] = &pb.CardData{
+			Number:    card.Number,
+			Name:      card.Name,
+			Cvv:       uint32(card.CVV),
+			Expiry:    card.Expiry,
+			Meta:      card.Meta,
+			Uuid:      card.UUID.String(),
+			CreatedAt: card.CreatedAt.Format(time.DateTime),
+			UpdatedAt: card.UpdatedAt.Format(time.DateTime),
+		}
+	}
+	return &pb.ListCardsResponse{Cards: response}, nil
+}
+
 func (s *Server) ListVariousData(ctx context.Context, _ *pb.ListVariousDataRequest) (*pb.ListVariousDataResponse, error) {
 
 	dataList, err := s.service.ListVariousData(ctx)
