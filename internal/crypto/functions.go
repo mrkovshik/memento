@@ -11,7 +11,7 @@ import (
 )
 
 func EncryptString(data, passphrase string) (string, error) {
-	salt := make([]byte, 8)
+	salt := make([]byte, 0)
 	if _, err := io.ReadFull(rand.Reader, salt); err != nil {
 		return "", err
 	}
