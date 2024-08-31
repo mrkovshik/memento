@@ -7,7 +7,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"github.com/mrkovshik/memento/api"
-	grpcServer "github.com/mrkovshik/memento/api/grpc"
+	grpcServer "github.com/mrkovshik/memento/api/grpcServer"
 	config "github.com/mrkovshik/memento/internal/config/server"
 	"github.com/mrkovshik/memento/internal/service/server"
 	"github.com/mrkovshik/memento/internal/storage/server/storage"

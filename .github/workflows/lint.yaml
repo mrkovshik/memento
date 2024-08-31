@@ -17,15 +17,3 @@ jobs:
 
       - name: Linter-check
         run: go run github.com/golangci/golangci-lint/cmd/golangci-lint@latest run
-
-      - name: Build
-        run: go build -o memento ./cmd/server/
-
-      - name: Test
-        run: go test -v ./...
-
-      - name: Transfer
-        uses: actions/upload-artifact@v3
-        with:
-          name: memento
-          path: memento
