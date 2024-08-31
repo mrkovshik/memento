@@ -125,9 +125,9 @@ func WithAddCard(c *CLI) {
 			fmt.Println("New card added successfully!")
 		},
 	}
-	addCardCmd.Flags().Uint64VarP(&card.Number, "number", "r", 0, "Card number")
+	addCardCmd.Flags().StringVarP(&card.Number, "number", "r", "", "Card number")
 	addCardCmd.Flags().StringVarP(&card.Name, "name", "n", "", "Card holder's name")
-	addCardCmd.Flags().UintVarP(&card.CVV, "cvv", "c", 0, "Card security code")
+	addCardCmd.Flags().StringVarP(&card.CVV, "cvv", "c", "0", "Card security code")
 	addCardCmd.Flags().StringVarP(&card.Meta, "meta", "m", "", "User meta data")
 	addCardCmd.Flags().StringVarP(&card.Expiry, "expiry", "e", "", "Card expiry date")
 

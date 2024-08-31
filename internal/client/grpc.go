@@ -119,7 +119,7 @@ func (c *Client) AddCard(ctx context.Context, card model.CardData) error {
 		CardData: &proto.CardData{ //TODO: encrypt data
 			Number: card.Number,
 			Name:   card.Name,
-			Cvv:    uint32(card.CVV),
+			Cvv:    card.CVV,
 			Expiry: card.Expiry,
 			Meta:   card.Meta,
 		},
@@ -139,7 +139,7 @@ func (c *Client) ListCards(ctx context.Context) ([]model.CardData, error) {
 		cards[i] = model.CardData{
 			Number: card.Number,
 			Name:   card.Name,
-			CVV:    uint(card.Cvv),
+			CVV:    card.Cvv,
 			Meta:   card.Meta,
 			Expiry: card.Expiry,
 		}

@@ -71,7 +71,7 @@ func (s *Server) AddCard(ctx context.Context, request *pb.AddCardRequest) (*pb.A
 	if err := s.service.AddCard(ctx, model.CardData{
 		Number: request.CardData.Number,
 		Name:   request.CardData.Name,
-		CVV:    uint(request.CardData.Cvv),
+		CVV:    request.CardData.Cvv,
 		Expiry: request.CardData.Expiry,
 		Meta:   request.CardData.Meta,
 	}); err != nil {
@@ -91,7 +91,7 @@ func (s *Server) ListCards(ctx context.Context, _ *pb.ListCardsRequest) (*pb.Lis
 		response[i] = &pb.CardData{
 			Number:    card.Number,
 			Name:      card.Name,
-			Cvv:       uint32(card.CVV),
+			Cvv:       card.CVV,
 			Expiry:    card.Expiry,
 			Meta:      card.Meta,
 			Uuid:      card.UUID.String(),

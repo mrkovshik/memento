@@ -23,9 +23,9 @@ string uuid = 1;
 
 message CardData {
   string uuid = 1;
-  uint64 number = 2;
+  string number = 2;
   string name = 3;
-  uint32 cvv = 4;
+  string cvv = 4;
   string expiry = 5;
   string meta = 6;
   string created_at = 7;

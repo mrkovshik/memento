@@ -35,7 +35,7 @@ func main() {
 		log.Fatal(err)
 	}
 	mementoClient := client.NewClient(conn)
-	srv := service.NewBasicService(mementoClient, sugar)
+	srv := service.NewBasicService(mementoClient, &cfg, sugar)
 	var clInterface *cli.CLI
 	ctxWithToken, err := addTokenToCtx(context.Background())
 	if err != nil {

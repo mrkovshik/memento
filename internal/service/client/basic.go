@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	config "github.com/mrkovshik/memento/internal/config/client"
 	"go.uber.org/zap"
 
 	"github.com/mrkovshik/memento/internal/model"
@@ -17,13 +18,14 @@ import (
 type BasicService struct {
 	client client
 	logger *zap.SugaredLogger
-	//config *config.ClientConfig
+	config *config.ClientConfig
 }
 
-func NewBasicService(requester client, logger *zap.SugaredLogger) *BasicService {
+func NewBasicService(requester client, cfg *config.ClientConfig, logger *zap.SugaredLogger) *BasicService {
 	return &BasicService{
 		client: requester,
 		logger: logger,
+		config: cfg,
 	}
 }
 
@@ -39,6 +41,13 @@ type client interface {
 	DownloadVariousData(ctx context.Context, dataUUID uuid.UUID, path string) error
 }
 
+type encryptor interface {
+	Encrypt(passphrase string) error
+}
+type decryptor interface {
+	Decrypt(passphrase string) error
+}
+
 func (c *BasicService) AddUser(ctx context.Context, user model.User) error {
 	return c.client.Register(ctx, user)
 }
@@ -48,6 +57,9 @@ func (c *BasicService) Login(ctx context.Context, user model.User) error {
 }
 
 func (c *BasicService) AddCredentials(ctx context.Context, credential model.Credential) (err error) {
+	if err := c.encryptData(&credential); err != nil {
+		return err
+	}
 	return c.client.AddCredentials(ctx, credential)
 }
 
@@ -66,6 +78,9 @@ func (c *BasicService) ListCredentials(ctx context.Context) error {
 
 	// Print each credential in tabular format
 	for _, cred := range creds {
+		if err := c.decryptData(&cred); err != nil {
+			return err
+		}
 		fmt.Printf(
 			"%-40s %-20s %-20s %-20s %-20s %-20s\n",
 			cred.UUID,
@@ -80,6 +95,9 @@ func (c *BasicService) ListCredentials(ctx context.Context) error {
 }
 
 func (c *BasicService) AddCard(ctx context.Context, card model.CardData) (err error) {
+	if err := c.encryptData(&card); err != nil {
+		return err
+	}
 	return c.client.AddCard(ctx, card)
 }
 
@@ -98,8 +116,11 @@ func (c *BasicService) ListCards(ctx context.Context) error {
 
 	// Print each credential in tabular format
 	for _, card := range cards {
+		if err := c.decryptData(&card); err != nil {
+			return err
+		}
 		fmt.Printf(
-			"%-40s %-20d %-20s %-5d %-8s %-20s %-20s %-20s\n",
+			"%-40s %-20s %-20s %-5s %-8s %-20s %-20s %-20s\n",
 			card.UUID,
 			card.Number,
 			card.Name,
@@ -152,4 +173,12 @@ func (c *BasicService) ListVariousData(ctx context.Context) error {
 
 func (c *BasicService) DownloadVariousData(ctx context.Context, dataUUID uuid.UUID, path string) error {
 	return c.client.DownloadVariousData(ctx, dataUUID, path)
+}
+
+func (c *BasicService) encryptData(data encryptor) error {
+	return data.Encrypt(c.config.CryptoKey)
+}
+
+func (c *BasicService) decryptData(data decryptor) error {
+	return data.Decrypt(c.config.CryptoKey)
 }
