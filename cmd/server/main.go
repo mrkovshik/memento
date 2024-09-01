@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"log"
+	"os"
+	"path/filepath"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -13,6 +15,7 @@ import (
 	"github.com/mrkovshik/memento/internal/storage/server/storage"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 func main() {
@@ -28,13 +31,29 @@ func main() {
 	if errGetConfigs != nil {
 		sugar.Fatal("config.GetConfigs", errGetConfigs)
 	}
+
 	db, err := sqlx.Connect("postgres", cfg.DBAddress)
 	if err != nil {
 		log.Fatal("sql.Open", err)
 	}
 	postgresStorage := storage.NewPostgresStorage(db)
 	mementoService := server.NewBasicService(postgresStorage, &cfg, sugar)
-	grpcSrv := grpc.NewServer(grpc.ChainUnaryInterceptor(grpcServer.UnaryLoggingInterceptor(sugar), grpcServer.Authenticate(mementoService, sugar)), grpc.ChainStreamInterceptor(grpcServer.AuthenticateStream(mementoService, sugar)))
+
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		sugar.Fatal("os.UserHomeDir", err)
+		return
+	}
+
+	// Set the path to the file in the home directory
+	certFile := filepath.Join(homeDir, "server.crt")
+	keyFile := filepath.Join(homeDir, "server.key")
+	creds, err := credentials.NewServerTLSFromFile(certFile, keyFile)
+	if err != nil {
+		sugar.Fatalf("Failed to load server certificates: %v", err)
+	}
+
+	grpcSrv := grpc.NewServer(grpc.ChainUnaryInterceptor(grpcServer.UnaryLoggingInterceptor(sugar), grpcServer.Authenticate(mementoService, sugar)), grpc.ChainStreamInterceptor(grpcServer.AuthenticateStream(mementoService, sugar)), grpc.Creds(creds))
 	grpcAPIService := grpcServer.NewServer(mementoService, grpcSrv, &cfg, sugar)
 	run(context.Background(), grpcAPIService)
 }
