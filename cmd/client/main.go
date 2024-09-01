@@ -35,7 +35,7 @@ func main() {
 
 	// Create a CertPool and add the embedded server certificate
 	certPool := x509.NewCertPool()
-	ok := certPool.AppendCertsFromPEM([]byte(config.defaultServerCert))
+	ok := certPool.AppendCertsFromPEM([]byte(cfg.ServerCertificate))
 	if !ok {
 		sugar.Fatalf("Failed to append embedded server certificate")
 	}
