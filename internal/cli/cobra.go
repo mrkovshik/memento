@@ -125,6 +125,7 @@ func WithAddCard(c *CLI) {
 			fmt.Println("New card added successfully!")
 		},
 	}
+	//TODO: implement validation
 	addCardCmd.Flags().StringVarP(&card.Number, "number", "r", "", "Card number")
 	addCardCmd.Flags().StringVarP(&card.Name, "name", "n", "", "Card holder's name")
 	addCardCmd.Flags().StringVarP(&card.CVV, "cvv", "c", "0", "Card security code")

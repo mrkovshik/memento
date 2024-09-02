@@ -53,7 +53,13 @@ func main() {
 		sugar.Fatalf("Failed to load server certificates: %v", err)
 	}
 
-	grpcSrv := grpc.NewServer(grpc.ChainUnaryInterceptor(grpcServer.UnaryLoggingInterceptor(sugar), grpcServer.Authenticate(mementoService, sugar)), grpc.ChainStreamInterceptor(grpcServer.AuthenticateStream(mementoService, sugar)), grpc.Creds(creds))
+	grpcSrv := grpc.NewServer(
+		grpc.ChainUnaryInterceptor(
+			grpcServer.UnaryLoggingInterceptor(sugar),
+			grpcServer.Authenticate(mementoService, sugar)),
+		grpc.ChainStreamInterceptor(grpcServer.AuthenticateStream(mementoService, sugar)),
+		grpc.Creds(creds))
+
 	grpcAPIService := grpcServer.NewServer(mementoService, grpcSrv, &cfg, sugar)
 	run(context.Background(), grpcAPIService)
 }

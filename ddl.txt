@@ -1,0 +1,67 @@
+create table if not exists public.card_data
+(
+    id         serial
+        constraint card_data_pk
+            primary key,
+    user_id    integer                               not null,
+    uuid       varchar                               not null
+        constraint card_data_unique
+            unique,
+    number     varchar default ''::character varying not null,
+    expiry     varchar default ''::character varying not null,
+    name       varchar                               not null,
+    cvv        varchar default ''::character varying not null,
+    created_at timestamp with time zone              not null,
+    updated_at timestamp with time zone              not null,
+    meta       varchar default ''::character varying not null
+);
+
+create table if not exists public.credentials_data
+(
+    id         serial
+        constraint credentials_data_pk
+            primary key,
+    user_id    integer                                                not null,
+    uuid       varchar                                                not null
+        constraint credentials_data_unique
+            unique,
+    login      varchar                                                not null,
+    password   varchar                                                not null,
+    created_at timestamp with time zone                               not null,
+    updated_at timestamp with time zone default CURRENT_TIMESTAMP     not null,
+    meta       varchar                  default ''::character varying not null
+);
+
+create table public.users
+(
+    id         serial
+        constraint users_pk
+            primary key,
+    name       varchar                                       not null,
+    password   varchar                                       not null,
+    created_at timestamp with time zone                      not null,
+    updated_at timestamp with time zone default CURRENT_DATE not null,
+    email      varchar                                       not null
+        constraint users_pk_2
+            unique
+);
+
+create table public.various_data
+(
+    id         serial
+        constraint various_data_pk
+            primary key,
+    user_id    integer                                                         not null,
+    data_type  smallint                 default 1                              not null,
+    uuid       varchar                                                         not null
+        constraint various_data_unique
+            unique,
+    created_at timestamp with time zone                                        not null,
+    updated_at timestamp with time zone default CURRENT_DATE                   not null,
+    meta       varchar                  default ''::character varying          not null,
+    status     varchar                  default 'undefined'::character varying not null,
+    title      varchar                  default ''::character varying          not null
+);
+
+comment on column public.various_data.meta is 'metadata for added data';
+
