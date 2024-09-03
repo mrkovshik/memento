@@ -146,12 +146,20 @@ func WithAddCard(c *CLI) {
 			fmt.Println("New card added successfully!")
 		},
 	}
-	//TODO: implement validation
 	addCardCmd.Flags().StringVarP(&card.Number, "number", "r", "", "Card number")
+	if err := addCardCmd.MarkFlagRequired("number"); err != nil {
+		log.Fatal(err)
+	}
 	addCardCmd.Flags().StringVarP(&card.Name, "name", "n", "", "Card holder's name")
 	addCardCmd.Flags().StringVarP(&card.CVV, "cvv", "c", "0", "Card security code")
+	if err := addCardCmd.MarkFlagRequired("cvv"); err != nil {
+		log.Fatal(err)
+	}
 	addCardCmd.Flags().StringVarP(&card.Meta, "meta", "m", "", "User meta data")
 	addCardCmd.Flags().StringVarP(&card.Expiry, "expiry", "e", "", "Card expiry date")
+	if err := addCardCmd.MarkFlagRequired("expiry"); err != nil {
+		log.Fatal(err)
+	}
 
 	c.AddCommand(addCardCmd)
 }
@@ -188,6 +196,9 @@ func WithAddData(c *CLI) {
 	}
 	addDataCmd.Flags().StringVarP(&data.Meta, "meta", "m", "AwesomeMeta", "user meta data")
 	addDataCmd.Flags().StringVarP(&filePath, "path", "p", "", "path to the data file")
+	if err := addDataCmd.MarkFlagRequired("path"); err != nil {
+		log.Fatal(err)
+	}
 	c.AddCommand(addDataCmd)
 }
 
@@ -232,7 +243,13 @@ func WithDownload(c *CLI) {
 		},
 	}
 	downloadCmd.Flags().StringVarP(&stringUUID, "uuid", "u", "", "data entry UUID")
+	if err := downloadCmd.MarkFlagRequired("uuid"); err != nil {
+		log.Fatal(err)
+	}
 	downloadCmd.Flags().StringVarP(&filePath, "path", "p", "", "path for the data file")
+	if err := downloadCmd.MarkFlagRequired("path"); err != nil {
+		log.Fatal(err)
+	}
 	c.AddCommand(downloadCmd)
 }
 

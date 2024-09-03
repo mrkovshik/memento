@@ -50,9 +50,8 @@ func (c *Client) Register(ctx context.Context, user users.User) error {
 }
 
 func (c *Client) Login(ctx context.Context, user users.User) error {
-	req := &proto.GetTokenRequest{User: &proto.User{ //TODO: hash pass
-		Password: user.Password,
-		Email:    user.Email,
+	req := &proto.GetTokenRequest{User: &proto.User{
+		Email: user.Email,
 	}}
 	resp, err := c.MementoClient.GetToken(ctx, req)
 	if err != nil {
@@ -75,7 +74,7 @@ func (c *Client) Login(ctx context.Context, user users.User) error {
 
 func (c *Client) AddCredentials(ctx context.Context, credential credentials.Credential) error {
 	req := &proto.AddCredentialRequest{
-		Credential: &proto.Credential{ //TODO: encrypt data
+		Credential: &proto.Credential{
 			Login:    credential.Login,
 			Password: credential.Password,
 			Meta:     credential.Meta,
@@ -119,7 +118,7 @@ func (c *Client) ListCredentials(ctx context.Context) ([]credentials.Credential,
 
 func (c *Client) AddCard(ctx context.Context, card cards.CardData) error {
 	req := &proto.AddCardRequest{
-		CardData: &proto.CardData{ //TODO: encrypt data
+		CardData: &proto.CardData{
 			Number: card.Number,
 			Name:   card.Name,
 			Cvv:    card.CVV,
@@ -181,7 +180,7 @@ func (c *Client) AddVariousData(ctx context.Context, dataModel data.VariousData,
 		return fmt.Errorf("failed to send metadata: %w", err)
 	}
 
-	chunkSize := 1024 * 1024 // 1MB chunks TODO: move chunk size to config
+	chunkSize := 1024 * 1024 // 1MB chunks
 
 	for i := 0; i < len(data); i += chunkSize {
 		end := i + chunkSize

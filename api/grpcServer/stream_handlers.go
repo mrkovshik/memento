@@ -141,7 +141,7 @@ func (s *Server) DownloadVariousDataFile(req *pb.DownloadVariousDataFileRequest,
 	defer file.Close()
 
 	// Define a buffer size for reading the file in chunks
-	const chunkSize = 1024 * 1024 // 1MB chunks TODO: move chunk size to config
+	const chunkSize = 1024 * 1024 // 1MB chunks
 	buffer := make([]byte, chunkSize)
 
 	for {

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"log"
 	"os"
+	"time"
 
 	"github.com/eschao/config"
 	"github.com/eschao/config/env"
@@ -19,7 +20,8 @@ const (
 	defaultConfigFilePath = ""
 	defaultAddress        = "localhost:3200"
 	defaultDBAddress      = "host=localhost port=5432 user=yandex password=yandex dbname=final sslmode=disable"
-	defaultCryptoKey      = "./public_key.pem"
+	defaultCryptoKey      = "MySuperAwesomeCryptoKey"
+	defaultTokenExpiry    = time.Hour * 24 * 7
 )
 
 var k = koanf.New(".")
@@ -27,13 +29,15 @@ var k = koanf.New(".")
 // ServerConfig holds the configuration settings for the server.
 type ServerConfig struct {
 	Address             string `env:"ADDRESS" json:"address"`
-	AddressIsSet        bool   `json:"-"`
+	addressIsSet        bool
 	DBAddress           string `env:"DATABASE_DSN" json:"database_dsn"`
-	DBAddressIsSet      bool   `json:"-"`
+	dbAddressIsSet      bool
 	CryptoKey           string `env:"CRYPTO_KEY" json:"crypto_key"`
-	CryptoKeyIsSet      bool   `json:"-"`
+	cryptoKeyIsSet      bool
 	ConfigFilePath      string `env:"CONFIG" json:"-"`
-	ConfigFilePathIsSet bool   `json:"-"`
+	configFilePathIsSet bool
+	TokenExpiry         time.Duration `env:"TOKEN_EXPIRY" json:"token_expiry"`
+	tokenExpiryIsSet    bool
 }
 
 // ServerConfigBuilder is a builder for constructing a ServerConfig instance.
@@ -46,34 +50,42 @@ func (c *ServerConfig) SetDefaults() {
 	c.DBAddress = defaultDBAddress
 	c.CryptoKey = defaultCryptoKey
 	c.ConfigFilePath = defaultConfigFilePath
+	c.TokenExpiry = defaultTokenExpiry
 
 }
 
 // WithAddress sets the address in the ServerConfig.
 func (c *ServerConfigBuilder) WithAddress(address string) *ServerConfigBuilder {
 	c.Config.Address = address
-	c.Config.AddressIsSet = true
+	c.Config.addressIsSet = true
 	return c
 }
 
 // WithDSN sets the database DSN in the ServerConfig.
 func (c *ServerConfigBuilder) WithDSN(dsn string) *ServerConfigBuilder {
 	c.Config.DBAddress = dsn
-	c.Config.DBAddressIsSet = true
+	c.Config.dbAddressIsSet = true
 	return c
 }
 
 // WithCryptoKey sets the crypto key flag in the ServerConfig.
 func (c *ServerConfigBuilder) WithCryptoKey(path string) *ServerConfigBuilder {
 	c.Config.CryptoKey = path
-	c.Config.CryptoKeyIsSet = true
+	c.Config.cryptoKeyIsSet = true
 	return c
 }
 
 // WithConfigFile sets the path to JSON configuration file
 func (c *ServerConfigBuilder) WithConfigFile(configFilePath string) *ServerConfigBuilder {
 	c.Config.ConfigFilePath = configFilePath
-	c.Config.ConfigFilePathIsSet = true
+	c.Config.configFilePathIsSet = true
+	return c
+}
+
+// WithTokenExpiry sets the authorization token time to live
+func (c *ServerConfigBuilder) WithTokenExpiry(exp time.Duration) *ServerConfigBuilder {
+	c.Config.TokenExpiry = exp
+	c.Config.tokenExpiryIsSet = true
 	return c
 }
 
@@ -93,16 +105,20 @@ func (c *ServerConfigBuilder) FromFile() *ServerConfigBuilder {
 		log.Fatalf("error parsing config: %v", err)
 	}
 
-	if JSONConfig.Address != defaultAddress && !c.Config.AddressIsSet {
+	if JSONConfig.Address != defaultAddress && !c.Config.addressIsSet {
 		c.WithAddress(JSONConfig.Address)
 	}
 
-	if JSONConfig.DBAddress != defaultDBAddress && !c.Config.DBAddressIsSet {
+	if JSONConfig.DBAddress != defaultDBAddress && !c.Config.dbAddressIsSet {
 		c.WithDSN(JSONConfig.DBAddress)
 	}
 
-	if JSONConfig.CryptoKey != defaultCryptoKey && !c.Config.CryptoKeyIsSet {
+	if JSONConfig.CryptoKey != defaultCryptoKey && !c.Config.cryptoKeyIsSet {
 		c.WithCryptoKey(JSONConfig.CryptoKey)
+	}
+
+	if JSONConfig.TokenExpiry != defaultTokenExpiry && !c.Config.tokenExpiryIsSet {
+		c.WithTokenExpiry(JSONConfig.TokenExpiry)
 	}
 
 	return c
@@ -115,19 +131,19 @@ func (c *ServerConfigBuilder) FromEnv() *ServerConfigBuilder {
 	}
 	_, addressIsSet := os.LookupEnv("ADDRESS")
 	if addressIsSet {
-		c.Config.AddressIsSet = true
+		c.Config.addressIsSet = true
 	}
 	_, cryptoKeyIsSet := os.LookupEnv("CRYPTO_KEY")
 	if cryptoKeyIsSet {
-		c.Config.CryptoKeyIsSet = true
+		c.Config.cryptoKeyIsSet = true
 	}
 	_, configFilePathIsSet := os.LookupEnv("CONFIG")
 	if configFilePathIsSet {
-		c.Config.ConfigFilePathIsSet = true
+		c.Config.configFilePathIsSet = true
 	}
 	_, dsnSet := os.LookupEnv("DATABASE_DSN")
 	if dsnSet {
-		c.Config.DBAddressIsSet = true
+		c.Config.dbAddressIsSet = true
 	}
 	return c
 }
@@ -135,7 +151,7 @@ func (c *ServerConfigBuilder) FromEnv() *ServerConfigBuilder {
 // GetConfigs returns the fully constructed ServerConfig by combining
 // configurations from environment variables and command-line flags.
 // It validates the address to ensure it is properly set.
-func GetConfigs() (ServerConfig, error) { //TODO: implement functional options
+func GetConfigs() (ServerConfig, error) {
 	var c ServerConfigBuilder
 	c.Config.SetDefaults()
 	c.FromEnv().FromFile()
