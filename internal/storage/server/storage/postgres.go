@@ -84,13 +84,13 @@ func (s *PostgresStorage) GetCardsByUserID(ctx context.Context, userID uint) ([]
 	return cards, nil
 }
 
-func (s *PostgresStorage) AddVariousData(ctx context.Context, data data.VariousData) (data.VariousData, error) {
+func (s *PostgresStorage) AddVariousData(ctx context.Context, dataInput data.VariousData) (data.VariousData, error) {
 	query := `INSERT INTO various_data (user_id, uuid, data_type, meta, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6)`
-	_, errExecContext := s.db.ExecContext(ctx, query, data.UserID, data.UUID, data.DataType, data.Meta, time.Now(), time.Now())
+	_, errExecContext := s.db.ExecContext(ctx, query, dataInput.UserID, dataInput.UUID, dataInput.DataType, dataInput.Meta, time.Now(), time.Now())
 	if errExecContext != nil {
 		return data.VariousData{}, errExecContext
 	}
-	return s.GetVariousDataByUUID(ctx, data.UUID)
+	return s.GetVariousDataByUUID(ctx, dataInput.UUID)
 }
 
 func (s *PostgresStorage) GetVariousDataByUUID(ctx context.Context, uuid uuid.UUID) (data.VariousData, error) {

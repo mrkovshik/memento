@@ -137,9 +137,9 @@ func (c *Client) ListCards(ctx context.Context) ([]cards.CardData, error) {
 	if err != nil {
 		return nil, err
 	}
-	cards := make([]cards.CardData, len(res.Cards))
+	cardsList := make([]cards.CardData, len(res.Cards))
 	for i, card := range res.Cards {
-		cards[i] = cards.CardData{
+		cardsList[i] = cards.CardData{
 			Number: card.Number,
 			Name:   card.Name,
 			CVV:    card.Cvv,
@@ -150,19 +150,19 @@ func (c *Client) ListCards(ctx context.Context) ([]cards.CardData, error) {
 		if err != nil {
 			return nil, err
 		}
-		cards[i].UUID = currentUUID
+		cardsList[i].UUID = currentUUID
 		createdAt, err := time.Parse(time.DateTime, card.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
-		cards[i].CreatedAt = createdAt
+		cardsList[i].CreatedAt = createdAt
 		updatedAt, err := time.Parse(time.DateTime, card.UpdatedAt)
 		if err != nil {
 			return nil, err
 		}
-		cards[i].UpdatedAt = updatedAt
+		cardsList[i].UpdatedAt = updatedAt
 	}
-	return cards, nil
+	return cardsList, nil
 }
 
 func (c *Client) AddVariousData(ctx context.Context, dataModel data.VariousData, data []byte) error {
@@ -220,9 +220,9 @@ func (c *Client) ListVariousData(ctx context.Context) ([]data.VariousData, error
 	if err != nil {
 		return nil, err
 	}
-	data := make([]data.VariousData, len(res.Data))
+	dataList := make([]data.VariousData, len(res.Data))
 	for i, currentData := range res.Data {
-		data[i] = data.VariousData{
+		dataList[i] = data.VariousData{
 			DataType: int(currentData.DataType),
 			Meta:     currentData.Meta,
 		}
@@ -230,19 +230,19 @@ func (c *Client) ListVariousData(ctx context.Context) ([]data.VariousData, error
 		if err != nil {
 			return nil, err
 		}
-		data[i].UUID = currentUUID
+		dataList[i].UUID = currentUUID
 		createdAt, err := time.Parse(time.DateTime, currentData.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
-		data[i].CreatedAt = createdAt
+		dataList[i].CreatedAt = createdAt
 		updatedAt, err := time.Parse(time.DateTime, currentData.UpdatedAt)
 		if err != nil {
 			return nil, err
 		}
-		data[i].UpdatedAt = updatedAt
+		dataList[i].UpdatedAt = updatedAt
 	}
-	return data, nil
+	return dataList, nil
 }
 
 func (c *Client) DownloadVariousData(ctx context.Context, dataUUID uuid.UUID, path string) error {

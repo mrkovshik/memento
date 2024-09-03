@@ -114,7 +114,7 @@ func (s *BasicService) ListCards(ctx context.Context) ([]cards.CardData, error) 
 	return s.storage.GetCardsByUserID(ctx, userID)
 }
 
-func (s *BasicService) AddVariousData(ctx context.Context, data data.VariousData) (data.VariousData, error) {
+func (s *BasicService) AddVariousData(ctx context.Context, dataInput data.VariousData) (data.VariousData, error) {
 	userID, err := auth.GetUserIDFromContext(ctx)
 	if err != nil {
 		return data.VariousData{}, err
@@ -123,9 +123,9 @@ func (s *BasicService) AddVariousData(ctx context.Context, data data.VariousData
 	if err != nil {
 		return data.VariousData{}, err
 	}
-	data.UUID = credentialUUID
-	data.UserID = userID
-	return s.storage.AddVariousData(ctx, data)
+	dataInput.UUID = credentialUUID
+	dataInput.UserID = userID
+	return s.storage.AddVariousData(ctx, dataInput)
 }
 
 func (s *BasicService) ListVariousData(ctx context.Context) ([]data.VariousData, error) {
