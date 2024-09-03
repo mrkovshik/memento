@@ -32,14 +32,14 @@ type storage interface {
 
 type BasicService struct {
 	storage storage
-	config  *config.ServerConfig
+	Config  *config.ServerConfig
 	logger  *zap.SugaredLogger
 }
 
 func NewBasicService(storage storage, config *config.ServerConfig, logger *zap.SugaredLogger) *BasicService {
 	return &BasicService{
 		storage: storage,
-		config:  config,
+		Config:  config,
 		logger:  logger,
 	}
 }
@@ -53,7 +53,7 @@ func (s *BasicService) AddUser(ctx context.Context, user users.User) (token stri
 	if err != nil {
 		return "", err
 	}
-	return auth.BuildJWTString(newUser.ID, s.config.TokenExpiry, s.config.CryptoKey)
+	return auth.BuildJWTString(newUser.ID, s.Config.TokenExpiry, s.Config.CryptoKey)
 }
 func (s *BasicService) GetUserByID(ctx context.Context, userID uint) (users.User, error) {
 	return s.storage.GetUserByID(ctx, userID)
@@ -67,7 +67,7 @@ func (s *BasicService) GetToken(ctx context.Context, user users.User) (string, e
 	if !checkPasswordHash(user.Password, foundUser.Password) {
 		return "", errors.New("password is incorrect")
 	}
-	return auth.BuildJWTString(foundUser.ID, s.config.TokenExpiry, s.config.CryptoKey)
+	return auth.BuildJWTString(foundUser.ID, s.Config.TokenExpiry, s.Config.CryptoKey)
 }
 
 func (s *BasicService) AddCredential(ctx context.Context, credential credentials.Credential) error {

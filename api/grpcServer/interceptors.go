@@ -91,7 +91,7 @@ func Authenticate(svc *server.BasicService, logger *zap.SugaredLogger) grpc.Unar
 		}
 
 		token := values[0]
-		claims, err := auth.GetClaims(token)
+		claims, err := auth.GetClaims(token, svc.Config.CryptoKey)
 		if err != nil {
 			if errors.Is(err, jwt.ErrTokenExpired) {
 				return nil, status.Errorf(codes.Unauthenticated, "Token expired")
@@ -142,7 +142,7 @@ func AuthenticateStream(svc *server.BasicService, logger *zap.SugaredLogger) grp
 		}
 
 		token := values[0]
-		claims, err := auth.GetClaims(token)
+		claims, err := auth.GetClaims(token, svc.Config.CryptoKey)
 		if err != nil {
 			if errors.Is(err, jwt.ErrTokenExpired) {
 				return status.Errorf(codes.Unauthenticated, "Token expired")
