@@ -7,7 +7,10 @@ import (
 	"log"
 
 	"github.com/google/uuid"
-	"github.com/mrkovshik/memento/internal/model"
+	"github.com/mrkovshik/memento/internal/model/cards"
+	"github.com/mrkovshik/memento/internal/model/credentials"
+	"github.com/mrkovshik/memento/internal/model/data"
+	"github.com/mrkovshik/memento/internal/model/users"
 	service "github.com/mrkovshik/memento/internal/service/client"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
@@ -43,7 +46,7 @@ func (c *CLI) Configure(opts ...func(c *CLI)) {
 }
 
 func WithRegister(c *CLI) {
-	var user model.User
+	var user users.User
 	var registerCmd = &cobra.Command{
 		Use:   "register",
 		Short: "Register a new memento user",
@@ -57,12 +60,18 @@ func WithRegister(c *CLI) {
 
 	registerCmd.Flags().StringVarP(&user.Name, "name", "n", "AwesomeUser", "user name")
 	registerCmd.Flags().StringVarP(&user.Password, "password", "p", "AwesomePassword", "user password")
+	if err := registerCmd.MarkFlagRequired("password"); err != nil {
+		log.Fatal(err)
+	}
 	registerCmd.Flags().StringVarP(&user.Email, "email", "e", "AwesomeEmail", "user email")
+	if err := registerCmd.MarkFlagRequired("email"); err != nil {
+		log.Fatal(err)
+	}
 	c.AddCommand(registerCmd)
 }
 
 func WithLogin(c *CLI) {
-	var user model.User
+	var user users.User
 	var loginCmd = &cobra.Command{
 		Use:   "login",
 		Short: "Login an existing memento user",
@@ -75,12 +84,18 @@ func WithLogin(c *CLI) {
 	}
 
 	loginCmd.Flags().StringVarP(&user.Password, "password", "p", "AwesomePassword", "user password")
+	if err := loginCmd.MarkFlagRequired("password"); err != nil {
+		log.Fatal(err)
+	}
 	loginCmd.Flags().StringVarP(&user.Email, "email", "e", "AwesomeEmail", "user email")
+	if err := loginCmd.MarkFlagRequired("email"); err != nil {
+		log.Fatal(err)
+	}
 	c.AddCommand(loginCmd)
 }
 
 func WithAddCreds(c *CLI) {
-	var creds model.Credential
+	var creds credentials.Credential
 	var addCredsCmd = &cobra.Command{
 		Use:   "add-credentials",
 		Short: "Add a new login-password pair to storage",
@@ -92,7 +107,13 @@ func WithAddCreds(c *CLI) {
 		},
 	}
 	addCredsCmd.Flags().StringVarP(&creds.Login, "login", "l", "AwesomeLogin", "user login")
+	if err := addCredsCmd.MarkFlagRequired("login"); err != nil {
+		log.Fatal(err)
+	}
 	addCredsCmd.Flags().StringVarP(&creds.Password, "password", "p", "AwesomePassword", "user password")
+	if err := addCredsCmd.MarkFlagRequired("password"); err != nil {
+		log.Fatal(err)
+	}
 	addCredsCmd.Flags().StringVarP(&creds.Meta, "meta", "m", "AwesomeMeta", "user meta data")
 
 	c.AddCommand(addCredsCmd)
@@ -114,7 +135,7 @@ func WithGetCreds(c *CLI) {
 }
 
 func WithAddCard(c *CLI) {
-	var card model.CardData
+	var card cards.CardData
 	var addCardCmd = &cobra.Command{
 		Use:   "add-card",
 		Short: "Add a new card to storage",
@@ -152,7 +173,7 @@ func WithListCards(c *CLI) {
 
 func WithAddData(c *CLI) {
 	var (
-		data     model.VariousData
+		data     data.VariousData
 		filePath string
 	)
 	var addDataCmd = &cobra.Command{

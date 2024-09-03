@@ -1,24 +1,11 @@
-package model
+package cards
 
 import (
-	"time"
+	"errors"
 
-	"github.com/google/uuid"
 	"github.com/mrkovshik/memento/internal/crypto"
+	"github.com/mrkovshik/memento/internal/validation"
 )
-
-type CardData struct {
-	ID        uint
-	UserID    uint `db:"user_id"`
-	UUID      uuid.UUID
-	Number    string
-	Expiry    string
-	CVV       string
-	Name      string
-	Meta      string
-	CreatedAt time.Time `db:"created_at"`
-	UpdatedAt time.Time `db:"updated_at"`
-}
 
 func (c *CardData) Encrypt(passphrase string) error {
 	var err error
@@ -58,6 +45,19 @@ func (c *CardData) Decrypt(passphrase string) error {
 	c.Expiry, err = crypto.DecryptString(c.Expiry, passphrase)
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+func (c *CardData) Validate() error {
+	if !validation.ValidateCardNumber(c.Number) {
+		return errors.New("invalid card number")
+	}
+	if err := validation.ValidateExpirationDate(c.Expiry); err != nil {
+		return err
+	}
+	if !validation.ValidateCVV(c.CVV) {
+		return errors.New("invalid CVV")
 	}
 	return nil
 }

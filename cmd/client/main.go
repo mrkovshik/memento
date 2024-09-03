@@ -18,7 +18,20 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var (
+	buildVersion, buildDate string
+)
+
 func main() {
+
+	if buildVersion == "" {
+		buildVersion = "N/A"
+	}
+	if buildDate == "" {
+		buildDate = "N/A"
+	}
+	fmt.Printf("Build version: %s\nBuild date: %s\n", buildVersion, buildDate)
+
 	// Initialize logging with zap
 	logger, err := zap.NewDevelopment()
 	if err != nil {

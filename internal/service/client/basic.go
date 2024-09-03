@@ -10,9 +10,11 @@ import (
 
 	"github.com/google/uuid"
 	config "github.com/mrkovshik/memento/internal/config/client"
+	"github.com/mrkovshik/memento/internal/model/cards"
+	"github.com/mrkovshik/memento/internal/model/credentials"
+	"github.com/mrkovshik/memento/internal/model/data"
+	"github.com/mrkovshik/memento/internal/model/users"
 	"go.uber.org/zap"
-
-	"github.com/mrkovshik/memento/internal/model"
 )
 
 type BasicService struct {
@@ -30,33 +32,38 @@ func NewBasicService(requester client, cfg *config.ClientConfig, logger *zap.Sug
 }
 
 type client interface {
-	Register(ctx context.Context, user model.User) error
-	Login(ctx context.Context, user model.User) error
-	AddCredentials(ctx context.Context, credential model.Credential) (err error)
-	ListCredentials(ctx context.Context) ([]model.Credential, error)
-	AddCard(ctx context.Context, card model.CardData) (err error)
-	ListCards(ctx context.Context) ([]model.CardData, error)
-	AddVariousData(ctx context.Context, dataModel model.VariousData, data []byte) (err error)
-	ListVariousData(ctx context.Context) (data []model.VariousData, err error)
+	Register(ctx context.Context, user users.User) error
+	Login(ctx context.Context, user users.User) error
+	AddCredentials(ctx context.Context, credential credentials.Credential) (err error)
+	ListCredentials(ctx context.Context) ([]credentials.Credential, error)
+	AddCard(ctx context.Context, card cards.CardData) (err error)
+	ListCards(ctx context.Context) ([]cards.CardData, error)
+	AddVariousData(ctx context.Context, dataModel data.VariousData, data []byte) (err error)
+	ListVariousData(ctx context.Context) (data []data.VariousData, err error)
 	DownloadVariousData(ctx context.Context, dataUUID uuid.UUID, path string) error
 }
 
-type encryptor interface {
-	Encrypt(passphrase string) error
-}
-type decryptor interface {
-	Decrypt(passphrase string) error
-}
+type (
+	encryptor interface {
+		Encrypt(passphrase string) error
+	}
+	decryptor interface {
+		Decrypt(passphrase string) error
+	}
+	validator interface {
+		Validate() error
+	}
+)
 
-func (c *BasicService) AddUser(ctx context.Context, user model.User) error {
+func (c *BasicService) AddUser(ctx context.Context, user users.User) error {
 	return c.client.Register(ctx, user)
 }
 
-func (c *BasicService) Login(ctx context.Context, user model.User) error {
+func (c *BasicService) Login(ctx context.Context, user users.User) error {
 	return c.client.Login(ctx, user)
 }
 
-func (c *BasicService) AddCredentials(ctx context.Context, credential model.Credential) (err error) {
+func (c *BasicService) AddCredentials(ctx context.Context, credential credentials.Credential) (err error) {
 	if err := c.encryptData(&credential); err != nil {
 		return err
 	}
@@ -94,7 +101,10 @@ func (c *BasicService) ListCredentials(ctx context.Context) error {
 	return nil
 }
 
-func (c *BasicService) AddCard(ctx context.Context, card model.CardData) (err error) {
+func (c *BasicService) AddCard(ctx context.Context, card cards.CardData) (err error) {
+	if err := c.validate(&card); err != nil {
+		return err
+	}
 	if err := c.encryptData(&card); err != nil {
 		return err
 	}
@@ -134,7 +144,7 @@ func (c *BasicService) ListCards(ctx context.Context) error {
 	return nil
 }
 
-func (c *BasicService) AddVariousDataFromFile(ctx context.Context, filePath string, dataModel model.VariousData) error {
+func (c *BasicService) AddVariousDataFromFile(ctx context.Context, filePath string, dataModel data.VariousData) error {
 
 	data, err := os.ReadFile(filePath)
 	if err != nil {
@@ -181,4 +191,8 @@ func (c *BasicService) encryptData(data encryptor) error {
 
 func (c *BasicService) decryptData(data decryptor) error {
 	return data.Decrypt(c.config.CryptoKey)
+}
+
+func (c *BasicService) validate(model validator) error {
+	return model.Validate()
 }

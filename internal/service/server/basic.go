@@ -5,26 +5,29 @@ import (
 	"errors"
 
 	"github.com/google/uuid"
+	"github.com/mrkovshik/memento/internal/model/cards"
+	"github.com/mrkovshik/memento/internal/model/credentials"
+	"github.com/mrkovshik/memento/internal/model/data"
+	"github.com/mrkovshik/memento/internal/model/users"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/mrkovshik/memento/internal/auth"
 	config "github.com/mrkovshik/memento/internal/config/server"
-	"github.com/mrkovshik/memento/internal/model"
 )
 
 type storage interface {
-	AddUser(ctx context.Context, user model.User) (model.User, error)
-	GetUserByID(ctx context.Context, userID uint) (model.User, error)
-	AddCredential(ctx context.Context, credential model.Credential) error
-	GetCredentialsByUserID(ctx context.Context, userID uint) ([]model.Credential, error)
-	AddCard(ctx context.Context, card model.CardData) error
-	GetCardsByUserID(ctx context.Context, userID uint) ([]model.CardData, error)
-	GetUserByEmail(ctx context.Context, email string) (model.User, error)
-	AddVariousData(ctx context.Context, data model.VariousData) (model.VariousData, error)
-	GetVariousDataByUUID(ctx context.Context, uuid uuid.UUID) (model.VariousData, error)
-	GetVariousDataByUserID(ctx context.Context, userID uint) ([]model.VariousData, error)
-	UpdateVariousDataStatusByUUID(ctx context.Context, uuid uuid.UUID, status model.DataStatus) error
+	AddUser(ctx context.Context, user users.User) (users.User, error)
+	GetUserByID(ctx context.Context, userID uint) (users.User, error)
+	AddCredential(ctx context.Context, credential credentials.Credential) error
+	GetCredentialsByUserID(ctx context.Context, userID uint) ([]credentials.Credential, error)
+	AddCard(ctx context.Context, card cards.CardData) error
+	GetCardsByUserID(ctx context.Context, userID uint) ([]cards.CardData, error)
+	GetUserByEmail(ctx context.Context, email string) (users.User, error)
+	AddVariousData(ctx context.Context, data data.VariousData) (data.VariousData, error)
+	GetVariousDataByUUID(ctx context.Context, uuid uuid.UUID) (data.VariousData, error)
+	GetVariousDataByUserID(ctx context.Context, userID uint) ([]data.VariousData, error)
+	UpdateVariousDataStatusByUUID(ctx context.Context, uuid uuid.UUID, status data.DataStatus) error
 }
 
 type BasicService struct {
@@ -41,7 +44,7 @@ func NewBasicService(storage storage, config *config.ServerConfig, logger *zap.S
 	}
 }
 
-func (s *BasicService) AddUser(ctx context.Context, user model.User) (token string, err error) {
+func (s *BasicService) AddUser(ctx context.Context, user users.User) (token string, err error) {
 	user.Password, err = hashPassword(user.Password)
 	if err != nil {
 		return "", err
@@ -52,11 +55,11 @@ func (s *BasicService) AddUser(ctx context.Context, user model.User) (token stri
 	}
 	return auth.BuildJWTString(newUser.ID)
 }
-func (s *BasicService) GetUserByID(ctx context.Context, userID uint) (model.User, error) {
+func (s *BasicService) GetUserByID(ctx context.Context, userID uint) (users.User, error) {
 	return s.storage.GetUserByID(ctx, userID)
 }
 
-func (s *BasicService) GetToken(ctx context.Context, user model.User) (string, error) {
+func (s *BasicService) GetToken(ctx context.Context, user users.User) (string, error) {
 	foundUser, err := s.storage.GetUserByEmail(ctx, user.Email)
 	if err != nil {
 		return "", err
@@ -67,7 +70,7 @@ func (s *BasicService) GetToken(ctx context.Context, user model.User) (string, e
 	return auth.BuildJWTString(foundUser.ID)
 }
 
-func (s *BasicService) AddCredential(ctx context.Context, credential model.Credential) error {
+func (s *BasicService) AddCredential(ctx context.Context, credential credentials.Credential) error {
 	userID, err := auth.GetUserIDFromContext(ctx)
 	if err != nil {
 		return err
@@ -81,7 +84,7 @@ func (s *BasicService) AddCredential(ctx context.Context, credential model.Crede
 	return s.storage.AddCredential(ctx, credential)
 }
 
-func (s *BasicService) ListCredentials(ctx context.Context) ([]model.Credential, error) {
+func (s *BasicService) ListCredentials(ctx context.Context) ([]credentials.Credential, error) {
 	userID, err := auth.GetUserIDFromContext(ctx)
 	if err != nil {
 		return nil, err
@@ -89,7 +92,7 @@ func (s *BasicService) ListCredentials(ctx context.Context) ([]model.Credential,
 	return s.storage.GetCredentialsByUserID(ctx, userID)
 }
 
-func (s *BasicService) AddCard(ctx context.Context, card model.CardData) error {
+func (s *BasicService) AddCard(ctx context.Context, card cards.CardData) error {
 	userID, err := auth.GetUserIDFromContext(ctx)
 	if err != nil {
 		return err
@@ -103,7 +106,7 @@ func (s *BasicService) AddCard(ctx context.Context, card model.CardData) error {
 	return s.storage.AddCard(ctx, card)
 }
 
-func (s *BasicService) ListCards(ctx context.Context) ([]model.CardData, error) {
+func (s *BasicService) ListCards(ctx context.Context) ([]cards.CardData, error) {
 	userID, err := auth.GetUserIDFromContext(ctx)
 	if err != nil {
 		return nil, err
@@ -111,21 +114,21 @@ func (s *BasicService) ListCards(ctx context.Context) ([]model.CardData, error) 
 	return s.storage.GetCardsByUserID(ctx, userID)
 }
 
-func (s *BasicService) AddVariousData(ctx context.Context, data model.VariousData) (model.VariousData, error) {
+func (s *BasicService) AddVariousData(ctx context.Context, data data.VariousData) (data.VariousData, error) {
 	userID, err := auth.GetUserIDFromContext(ctx)
 	if err != nil {
-		return model.VariousData{}, err
+		return data.VariousData{}, err
 	}
 	credentialUUID, err := uuid.NewV6()
 	if err != nil {
-		return model.VariousData{}, err
+		return data.VariousData{}, err
 	}
 	data.UUID = credentialUUID
 	data.UserID = userID
 	return s.storage.AddVariousData(ctx, data)
 }
 
-func (s *BasicService) ListVariousData(ctx context.Context) ([]model.VariousData, error) {
+func (s *BasicService) ListVariousData(ctx context.Context) ([]data.VariousData, error) {
 	userID, err := auth.GetUserIDFromContext(ctx)
 	if err != nil {
 		return nil, err
@@ -133,7 +136,7 @@ func (s *BasicService) ListVariousData(ctx context.Context) ([]model.VariousData
 	return s.storage.GetVariousDataByUserID(ctx, userID)
 }
 
-func (s *BasicService) UpdateVariousDataStatus(ctx context.Context, dataUUID uuid.UUID, status model.DataStatus) error {
+func (s *BasicService) UpdateVariousDataStatus(ctx context.Context, dataUUID uuid.UUID, status data.DataStatus) error {
 	return s.storage.UpdateVariousDataStatusByUUID(ctx, dataUUID, status)
 }
 

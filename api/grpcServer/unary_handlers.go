@@ -4,12 +4,14 @@ import (
 	"context"
 	"time"
 
-	"github.com/mrkovshik/memento/internal/model"
+	"github.com/mrkovshik/memento/internal/model/cards"
+	"github.com/mrkovshik/memento/internal/model/credentials"
+	"github.com/mrkovshik/memento/internal/model/users"
 	pb "github.com/mrkovshik/memento/proto"
 )
 
 func (s *Server) AddUser(ctx context.Context, request *pb.AddUserRequest) (*pb.AddUserResponse, error) {
-	token, err := s.service.AddUser(ctx, model.User{
+	token, err := s.service.AddUser(ctx, users.User{
 		Name:     request.User.Name,
 		Email:    request.User.Email,
 		Password: request.User.Password,
@@ -23,7 +25,7 @@ func (s *Server) AddUser(ctx context.Context, request *pb.AddUserRequest) (*pb.A
 }
 
 func (s *Server) GetToken(ctx context.Context, request *pb.GetTokenRequest) (*pb.GetTokenResponse, error) {
-	token, err := s.service.GetToken(ctx, model.User{
+	token, err := s.service.GetToken(ctx, users.User{
 		Name:     request.User.Name,
 		Email:    request.User.Email,
 		Password: request.User.Password,
@@ -37,7 +39,7 @@ func (s *Server) GetToken(ctx context.Context, request *pb.GetTokenRequest) (*pb
 }
 
 func (s *Server) AddCredential(ctx context.Context, request *pb.AddCredentialRequest) (*pb.AddCredentialResponse, error) {
-	if err := s.service.AddCredential(ctx, model.Credential{
+	if err := s.service.AddCredential(ctx, credentials.Credential{
 		Login:    request.Credential.Login,
 		Password: request.Credential.Password,
 		Meta:     request.Credential.Meta,
@@ -68,7 +70,7 @@ func (s *Server) ListCredentials(ctx context.Context, _ *pb.ListCredentialsReque
 }
 
 func (s *Server) AddCard(ctx context.Context, request *pb.AddCardRequest) (*pb.AddCardResponse, error) {
-	if err := s.service.AddCard(ctx, model.CardData{
+	if err := s.service.AddCard(ctx, cards.CardData{
 		Number: request.CardData.Number,
 		Name:   request.CardData.Name,
 		CVV:    request.CardData.Cvv,

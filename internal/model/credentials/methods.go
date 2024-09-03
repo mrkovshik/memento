@@ -1,22 +1,6 @@
-package model
+package credentials
 
-import (
-	"time"
-
-	"github.com/google/uuid"
-	"github.com/mrkovshik/memento/internal/crypto"
-)
-
-type Credential struct {
-	ID        uint
-	UserID    uint `db:"user_id"`
-	UUID      uuid.UUID
-	Login     string
-	Password  string
-	Meta      string
-	CreatedAt time.Time `db:"created_at"`
-	UpdatedAt time.Time `db:"updated_at"`
-}
+import "github.com/mrkovshik/memento/internal/crypto"
 
 func (c *Credential) Encrypt(passphrase string) error {
 	var err error

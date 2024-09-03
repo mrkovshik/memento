@@ -6,7 +6,10 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
-	"github.com/mrkovshik/memento/internal/model"
+	"github.com/mrkovshik/memento/internal/model/cards"
+	"github.com/mrkovshik/memento/internal/model/credentials"
+	"github.com/mrkovshik/memento/internal/model/data"
+	"github.com/mrkovshik/memento/internal/model/users"
 )
 
 // PostgresStorage implements the service.Storage interface using a SQL database.
@@ -21,33 +24,33 @@ func NewPostgresStorage(db *sqlx.DB) *PostgresStorage {
 	}
 }
 
-func (s *PostgresStorage) AddUser(ctx context.Context, user model.User) (model.User, error) {
+func (s *PostgresStorage) AddUser(ctx context.Context, user users.User) (users.User, error) {
 	query := `INSERT INTO users (name, email, password, created_at, updated_at) VALUES ($1, $2, $3, $4, $5)`
 	_, errExecContext := s.db.ExecContext(ctx, query, user.Name, user.Email, user.Password, time.Now(), time.Now())
 	if errExecContext != nil {
-		return model.User{}, errExecContext
+		return users.User{}, errExecContext
 	}
 
 	return s.GetUserByEmail(ctx, user.Email)
 }
 
-func (s *PostgresStorage) GetUserByEmail(ctx context.Context, email string) (model.User, error) {
-	var user model.User
+func (s *PostgresStorage) GetUserByEmail(ctx context.Context, email string) (users.User, error) {
+	var user users.User
 	if err := s.db.GetContext(ctx, &user, "SELECT * FROM users WHERE email = $1", email); err != nil {
-		return model.User{}, err
+		return users.User{}, err
 	}
 	return user, nil
 }
 
-func (s *PostgresStorage) GetUserByID(ctx context.Context, id uint) (model.User, error) {
-	var user model.User
+func (s *PostgresStorage) GetUserByID(ctx context.Context, id uint) (users.User, error) {
+	var user users.User
 	if err := s.db.GetContext(ctx, &user, "SELECT * FROM users WHERE id = $1", id); err != nil {
-		return model.User{}, err
+		return users.User{}, err
 	}
 	return user, nil
 }
 
-func (s *PostgresStorage) AddCredential(ctx context.Context, credential model.Credential) error {
+func (s *PostgresStorage) AddCredential(ctx context.Context, credential credentials.Credential) error {
 	query := `INSERT INTO credentials_data (user_id, uuid, login, password, meta, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7)`
 	_, errExecContext := s.db.ExecContext(ctx, query, credential.UserID, credential.UUID, credential.Login, credential.Password, credential.Meta, time.Now(), time.Now())
 	if errExecContext != nil {
@@ -56,15 +59,15 @@ func (s *PostgresStorage) AddCredential(ctx context.Context, credential model.Cr
 	return nil
 }
 
-func (s *PostgresStorage) GetCredentialsByUserID(ctx context.Context, userID uint) ([]model.Credential, error) {
-	var credentials []model.Credential
+func (s *PostgresStorage) GetCredentialsByUserID(ctx context.Context, userID uint) ([]credentials.Credential, error) {
+	var credentials []credentials.Credential
 	if err := s.db.SelectContext(ctx, &credentials, "SELECT * FROM credentials_data WHERE user_id = $1", userID); err != nil {
 		return nil, err
 	}
 	return credentials, nil
 }
 
-func (s *PostgresStorage) AddCard(ctx context.Context, card model.CardData) error {
+func (s *PostgresStorage) AddCard(ctx context.Context, card cards.CardData) error {
 	query := `INSERT INTO card_data (user_id, uuid, number, name , cvv, expiry, meta, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
 	_, errExecContext := s.db.ExecContext(ctx, query, card.UserID, card.UUID, card.Number, card.Name, card.CVV, card.Expiry, card.Meta, time.Now(), time.Now())
 	if errExecContext != nil {
@@ -73,40 +76,40 @@ func (s *PostgresStorage) AddCard(ctx context.Context, card model.CardData) erro
 	return nil
 }
 
-func (s *PostgresStorage) GetCardsByUserID(ctx context.Context, userID uint) ([]model.CardData, error) {
-	var cards []model.CardData
+func (s *PostgresStorage) GetCardsByUserID(ctx context.Context, userID uint) ([]cards.CardData, error) {
+	var cards []cards.CardData
 	if err := s.db.SelectContext(ctx, &cards, "SELECT * FROM card_data WHERE user_id = $1", userID); err != nil {
 		return nil, err
 	}
 	return cards, nil
 }
 
-func (s *PostgresStorage) AddVariousData(ctx context.Context, data model.VariousData) (model.VariousData, error) {
+func (s *PostgresStorage) AddVariousData(ctx context.Context, data data.VariousData) (data.VariousData, error) {
 	query := `INSERT INTO various_data (user_id, uuid, data_type, meta, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6)`
 	_, errExecContext := s.db.ExecContext(ctx, query, data.UserID, data.UUID, data.DataType, data.Meta, time.Now(), time.Now())
 	if errExecContext != nil {
-		return model.VariousData{}, errExecContext
+		return data.VariousData{}, errExecContext
 	}
 	return s.GetVariousDataByUUID(ctx, data.UUID)
 }
 
-func (s *PostgresStorage) GetVariousDataByUUID(ctx context.Context, uuid uuid.UUID) (model.VariousData, error) {
-	var result model.VariousData
+func (s *PostgresStorage) GetVariousDataByUUID(ctx context.Context, uuid uuid.UUID) (data.VariousData, error) {
+	var result data.VariousData
 	if err := s.db.GetContext(ctx, &result, "SELECT * FROM various_data WHERE uuid = $1", uuid); err != nil {
-		return model.VariousData{}, err
+		return data.VariousData{}, err
 	}
 	return result, nil
 }
 
-func (s *PostgresStorage) GetVariousDataByUserID(ctx context.Context, userID uint) ([]model.VariousData, error) {
-	var data []model.VariousData
+func (s *PostgresStorage) GetVariousDataByUserID(ctx context.Context, userID uint) ([]data.VariousData, error) {
+	var data []data.VariousData
 	if err := s.db.SelectContext(ctx, &data, "SELECT * FROM various_data WHERE user_id = $1", userID); err != nil {
 		return nil, err
 	}
 	return data, nil
 }
 
-func (s *PostgresStorage) UpdateVariousDataStatusByUUID(ctx context.Context, uuid uuid.UUID, status model.DataStatus) error {
+func (s *PostgresStorage) UpdateVariousDataStatusByUUID(ctx context.Context, uuid uuid.UUID, status data.DataStatus) error {
 	query := `UPDATE various_data SET status = $1, updated_at = $2 WHERE uuid = $3`
 	_, errExecContext := s.db.ExecContext(ctx, query, status, time.Now(), uuid)
 	if errExecContext != nil {

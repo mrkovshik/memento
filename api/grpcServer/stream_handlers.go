@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/mrkovshik/memento/internal/auth"
-	"github.com/mrkovshik/memento/internal/model"
+	"github.com/mrkovshik/memento/internal/model/data"
 	pb "github.com/mrkovshik/memento/proto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -47,7 +47,7 @@ func (s *Server) AddVariousData(stream pb.Memento_AddVariousDataServer) error {
 	}
 
 	// Inserting entry to DB
-	dataModel, err := s.service.AddVariousData(ctx, model.VariousData{
+	dataModel, err := s.service.AddVariousData(ctx, data.VariousData{
 		UserID:   userID,
 		DataType: int(variousData.DataType),
 		Meta:     variousData.Meta,

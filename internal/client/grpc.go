@@ -8,7 +8,10 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/mrkovshik/memento/internal/model"
+	"github.com/mrkovshik/memento/internal/model/cards"
+	"github.com/mrkovshik/memento/internal/model/credentials"
+	"github.com/mrkovshik/memento/internal/model/data"
+	"github.com/mrkovshik/memento/internal/model/users"
 	"github.com/mrkovshik/memento/proto"
 	"google.golang.org/grpc"
 )
@@ -21,7 +24,7 @@ func NewClient(conn *grpc.ClientConn) *Client {
 	return &Client{proto.NewMementoClient(conn)}
 }
 
-func (c *Client) Register(ctx context.Context, user model.User) error {
+func (c *Client) Register(ctx context.Context, user users.User) error {
 	req := &proto.AddUserRequest{User: &proto.User{
 		Name:     user.Name,
 		Password: user.Password,
@@ -46,7 +49,7 @@ func (c *Client) Register(ctx context.Context, user model.User) error {
 	return nil
 }
 
-func (c *Client) Login(ctx context.Context, user model.User) error {
+func (c *Client) Login(ctx context.Context, user users.User) error {
 	req := &proto.GetTokenRequest{User: &proto.User{ //TODO: hash pass
 		Password: user.Password,
 		Email:    user.Email,
@@ -70,7 +73,7 @@ func (c *Client) Login(ctx context.Context, user model.User) error {
 	return nil
 }
 
-func (c *Client) AddCredentials(ctx context.Context, credential model.Credential) error {
+func (c *Client) AddCredentials(ctx context.Context, credential credentials.Credential) error {
 	req := &proto.AddCredentialRequest{
 		Credential: &proto.Credential{ //TODO: encrypt data
 			Login:    credential.Login,
@@ -82,15 +85,15 @@ func (c *Client) AddCredentials(ctx context.Context, credential model.Credential
 	return err
 }
 
-func (c *Client) ListCredentials(ctx context.Context) ([]model.Credential, error) {
+func (c *Client) ListCredentials(ctx context.Context) ([]credentials.Credential, error) {
 
 	res, err := c.MementoClient.ListCredentials(ctx, &proto.ListCredentialsRequest{})
 	if err != nil {
 		return nil, err
 	}
-	creds := make([]model.Credential, len(res.Credentials))
+	creds := make([]credentials.Credential, len(res.Credentials))
 	for i, cred := range res.Credentials {
-		creds[i] = model.Credential{
+		creds[i] = credentials.Credential{
 			Login:    cred.Login,
 			Password: cred.Password,
 			Meta:     cred.Meta,
@@ -114,7 +117,7 @@ func (c *Client) ListCredentials(ctx context.Context) ([]model.Credential, error
 	return creds, nil
 }
 
-func (c *Client) AddCard(ctx context.Context, card model.CardData) error {
+func (c *Client) AddCard(ctx context.Context, card cards.CardData) error {
 	req := &proto.AddCardRequest{
 		CardData: &proto.CardData{ //TODO: encrypt data
 			Number: card.Number,
@@ -128,15 +131,15 @@ func (c *Client) AddCard(ctx context.Context, card model.CardData) error {
 	return err
 }
 
-func (c *Client) ListCards(ctx context.Context) ([]model.CardData, error) {
+func (c *Client) ListCards(ctx context.Context) ([]cards.CardData, error) {
 
 	res, err := c.MementoClient.ListCards(ctx, &proto.ListCardsRequest{})
 	if err != nil {
 		return nil, err
 	}
-	cards := make([]model.CardData, len(res.Cards))
+	cards := make([]cards.CardData, len(res.Cards))
 	for i, card := range res.Cards {
-		cards[i] = model.CardData{
+		cards[i] = cards.CardData{
 			Number: card.Number,
 			Name:   card.Name,
 			CVV:    card.Cvv,
@@ -162,7 +165,7 @@ func (c *Client) ListCards(ctx context.Context) ([]model.CardData, error) {
 	return cards, nil
 }
 
-func (c *Client) AddVariousData(ctx context.Context, dataModel model.VariousData, data []byte) error {
+func (c *Client) AddVariousData(ctx context.Context, dataModel data.VariousData, data []byte) error {
 	stream, err := c.MementoClient.AddVariousData(ctx)
 	if err != nil {
 		return err
@@ -211,15 +214,15 @@ func (c *Client) AddVariousData(ctx context.Context, dataModel model.VariousData
 	return nil
 }
 
-func (c *Client) ListVariousData(ctx context.Context) ([]model.VariousData, error) {
+func (c *Client) ListVariousData(ctx context.Context) ([]data.VariousData, error) {
 
 	res, err := c.MementoClient.ListVariousData(ctx, &proto.ListVariousDataRequest{})
 	if err != nil {
 		return nil, err
 	}
-	data := make([]model.VariousData, len(res.Data))
+	data := make([]data.VariousData, len(res.Data))
 	for i, currentData := range res.Data {
-		data[i] = model.VariousData{
+		data[i] = data.VariousData{
 			DataType: int(currentData.DataType),
 			Meta:     currentData.Meta,
 		}
