@@ -3,11 +3,10 @@ package main
 import (
 	"context"
 	"crypto/x509"
-	"errors"
 	"fmt"
 	"log"
-	"os"
 
+	"github.com/mrkovshik/memento/internal/auth"
 	"github.com/mrkovshik/memento/internal/cli"
 	"github.com/mrkovshik/memento/internal/client"
 	config "github.com/mrkovshik/memento/internal/config/client"
@@ -15,7 +14,6 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
-	"google.golang.org/grpc/metadata"
 )
 
 func main() {
@@ -50,7 +48,7 @@ func main() {
 	mementoClient := client.NewClient(conn)
 	srv := service.NewBasicService(mementoClient, &cfg, sugar)
 	var clInterface *cli.CLI
-	ctxWithToken, err := addTokenToCtx(context.Background())
+	ctxWithToken, err := auth.AddTokenToContext(context.Background())
 	if err != nil {
 		fmt.Printf("Not authorized: %s, only Register and Login commands are available", err)
 		clInterface = cli.NewCLI(context.Background(), srv, sugar)
@@ -76,17 +74,4 @@ func main() {
 		sugar.Fatal(err)
 	}
 
-}
-
-func addTokenToCtx(ctx context.Context) (context.Context, error) {
-	tokenBytes, err := os.ReadFile(".auth")
-	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			fmt.Println("No auth token found, please login or register")
-		}
-		return nil, err
-	}
-	md := metadata.New(map[string]string{"auth_token": string(tokenBytes)})
-	ctx = metadata.NewOutgoingContext(ctx, md)
-	return ctx, nil
 }

@@ -3,6 +3,8 @@ package auth
 import (
 	"context"
 	"errors"
+	"fmt"
+	"os"
 
 	"github.com/golang-jwt/jwt/v4"
 	"google.golang.org/grpc/codes"
@@ -24,6 +26,19 @@ func GetUserIDFromContext(ctx context.Context) (uint, error) {
 	}
 	claims := *claimsPointer
 	return claims.UserID, nil
+}
+
+func AddTokenToContext(ctx context.Context) (context.Context, error) {
+	tokenBytes, err := os.ReadFile(".auth")
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			fmt.Println("No auth token found, please login or register")
+		}
+		return nil, err
+	}
+	md := metadata.New(map[string]string{authTokenKey: string(tokenBytes)})
+	ctx = metadata.NewOutgoingContext(ctx, md)
+	return ctx, nil
 }
 
 func GetClaimsFromContext(ctx context.Context) (*Claims, error) {

@@ -57,7 +57,8 @@ func main() {
 		grpc.ChainUnaryInterceptor(
 			grpcServer.UnaryLoggingInterceptor(sugar),
 			grpcServer.Authenticate(mementoService, sugar)),
-		grpc.ChainStreamInterceptor(grpcServer.AuthenticateStream(mementoService, sugar)),
+		grpc.ChainStreamInterceptor(grpcServer.AuthenticateStream(mementoService, sugar),
+			grpcServer.StreamLoggingInterceptor(sugar)),
 		grpc.Creds(creds))
 
 	grpcAPIService := grpcServer.NewServer(mementoService, grpcSrv, &cfg, sugar)
