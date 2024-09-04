@@ -1,0 +1,140 @@
+syntax = "proto3";
+package api.grpc;
+option go_package = "memento/proto";
+
+
+message User {
+  string id = 1;
+  string name = 2;
+  string password = 3;
+  string email = 4;
+  string created_at = 5;
+  string updated_at = 6;
+}
+
+message Credential {
+string uuid = 1;
+  string login = 2;
+  string password = 3;
+  string meta = 4;
+  string created_at = 5;
+  string updated_at = 6;
+}
+
+message CardData {
+  string uuid = 1;
+  string number = 2;
+  string name = 3;
+  string cvv = 4;
+  string expiry = 5;
+  string meta = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}
+
+message VariousData {
+  string uuid = 1;
+  string meta = 2;
+  int32 dataType =3;
+  string created_at = 5;
+  string updated_at = 6;
+}
+
+message AddUserRequest{
+ User user = 1;
+}
+
+message AddUserResponse{
+  string token = 1;
+  string error = 2;
+}
+
+message GetTokenRequest{
+  User user = 1;
+}
+
+message GetTokenResponse{
+  string token = 1;
+  string error = 2;
+}
+
+message AddCredentialRequest{
+  Credential credential = 1;
+}
+
+message AddCredentialResponse{
+  string error = 1;
+}
+
+message ListCredentialsRequest{}
+
+message ListCredentialsResponse{
+  repeated Credential credentials = 1;
+  string error = 2;
+}
+
+message AddCardRequest{
+  CardData cardData = 1;
+}
+
+message AddCardResponse{
+  string error = 1;
+}
+
+message ListCardsRequest{}
+
+message ListCardsResponse{
+  repeated CardData cards = 1;
+  string error = 2;
+}
+
+message FileChunk {
+  bytes content = 1;
+}
+
+message UploadStatus {
+  bool success = 1;
+  string message = 2;
+}
+
+message AddVariousDataRequest{
+  oneof data {
+    VariousData variousData = 1;
+    bytes chunk = 2;
+  }
+}
+
+message AddVariousDataResponse{
+  UploadStatus uploadStatus = 1;
+  string error = 2;
+}
+
+message DownloadVariousDataFileRequest{
+  string dataUUID = 1;
+}
+
+message DownloadVariousDataFileResponse{
+    bytes chunk = 1;
+}
+
+message ListVariousDataRequest{}
+
+message ListVariousDataResponse{
+  repeated VariousData data = 1;
+  string error = 2;
+}
+
+
+service Memento {
+  rpc AddUser(AddUserRequest) returns (AddUserResponse);
+  rpc GetToken(GetTokenRequest) returns (GetTokenResponse);
+  rpc AddCredential(AddCredentialRequest) returns (AddCredentialResponse);
+  rpc ListCredentials(ListCredentialsRequest) returns (ListCredentialsResponse);
+  rpc AddCard(AddCardRequest) returns (AddCardResponse);
+  rpc ListCards(ListCardsRequest) returns (ListCardsResponse);
+  rpc AddVariousData(stream AddVariousDataRequest) returns (AddVariousDataResponse);
+  rpc DownloadVariousDataFile(DownloadVariousDataFileRequest) returns (stream DownloadVariousDataFileResponse);
+  rpc ListVariousData(ListVariousDataRequest) returns (ListVariousDataResponse);
+}
+
+//protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/memento.proto

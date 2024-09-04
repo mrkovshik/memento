@@ -1,0 +1,37 @@
+run:
+  timeout: 15m
+  tests: true
+  modules-download-mode: readonly
+  allow-parallel-runners: false
+output:
+  formats:
+    - format: colored-line-number
+linters-settings:
+  gofmt:
+    simplify: true
+  gci:
+    sections:
+      - Standard
+      - Default
+linters:
+  disable-all: true
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - contextcheck
+    - nilnil
+    - nilerr
+    - asciicheck
+    - unconvert
+    - loggercheck
+    - exportloopref
+    - asasalint
+    - durationcheck
+    - makezero
+    - reassign
+issues:
+  fix: false
