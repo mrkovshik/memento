@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"crypto/x509"
 	"fmt"
 	"log"
 
@@ -12,8 +11,6 @@ import (
 	config "github.com/mrkovshik/memento/internal/config/client"
 	service "github.com/mrkovshik/memento/internal/service/client"
 	"go.uber.org/zap"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 )
 
 func main() {
@@ -31,21 +28,11 @@ func main() {
 		sugar.Fatal(errGetConfigs)
 	}
 
-	// Create a CertPool and add the embedded server certificate
-	certPool := x509.NewCertPool()
-	ok := certPool.AppendCertsFromPEM([]byte(cfg.ServerCertificate))
-	if !ok {
-		sugar.Fatalf("Failed to append embedded server certificate")
-	}
-
-	// Create TLS credentials using the CertPool
-	creds := credentials.NewClientTLSFromCert(certPool, "")
-
-	conn, err := grpc.NewClient(cfg.Address, grpc.WithTransportCredentials(creds))
+	mementoClient, err := client.NewClient(cfg.ServerCertificate, cfg.Address)
 	if err != nil {
-		log.Fatal(err)
+		sugar.Fatal(err)
 	}
-	mementoClient := client.NewClient(conn)
+
 	srv := service.NewBasicService(mementoClient, &cfg, sugar)
 	var clInterface *cli.CLI
 	ctxWithToken, err := auth.AddTokenToContext(context.Background())

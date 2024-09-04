@@ -2,8 +2,10 @@ package client
 
 import (
 	"context"
+	"crypto/x509"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"time"
 
@@ -11,14 +13,29 @@ import (
 	"github.com/mrkovshik/memento/internal/model"
 	"github.com/mrkovshik/memento/proto"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 type Client struct {
 	proto.MementoClient
 }
 
-func NewClient(conn *grpc.ClientConn) *Client {
-	return &Client{proto.NewMementoClient(conn)}
+func NewClient(srvCert, address string) (*Client, error) {
+	// Create a CertPool and add the embedded server certificate
+	certPool := x509.NewCertPool()
+	ok := certPool.AppendCertsFromPEM([]byte(srvCert))
+	if !ok {
+		return nil, fmt.Errorf("failed to append certificate")
+	}
+
+	// Create TLS credentials using the CertPool
+	creds := credentials.NewClientTLSFromCert(certPool, "")
+
+	conn, err := grpc.NewClient(address, grpc.WithTransportCredentials(creds))
+	if err != nil {
+		log.Fatal(err)
+	}
+	return &Client{proto.NewMementoClient(conn)}, nil
 }
 
 func (c *Client) Register(ctx context.Context, user model.User) error {
