@@ -17,7 +17,7 @@ func TestBuildJWTString(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			token, errBuildJWTString := BuildJWTString(tt.userID)
 			require.NoError(t, errBuildJWTString)
-			claims, errGetClaims := GetClaims(token)
+			claims, errGetClaims := getClaimsFromToken(token)
 			require.NoError(t, errGetClaims)
 			require.Equal(t, tt.userID, claims.UserID)
 		})
